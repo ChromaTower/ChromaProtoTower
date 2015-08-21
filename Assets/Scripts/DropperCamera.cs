@@ -6,8 +6,9 @@ public class DropperCamera : MonoBehaviour {
 	// The tower "object" - comprised of the blocks themselves
 	public GameObject tower;
 
-	// The blocks used - prefab
-	public GameObject block;
+	// Used for placing new blocks on screen
+	private GameObject blockPlace;
+
 
 	// The increments the camera is snapped to when rotating
 	// Not advised that you change this, but if you want to...
@@ -21,7 +22,7 @@ public class DropperCamera : MonoBehaviour {
 	private float posDifference = 0f;
 
 	// How far the camera sits above the tower
-	private float verticalHeight = 10f;
+	private float verticalHeight = 6f;
 	
 
 	// How much time to wait between rotations, in sec
@@ -30,11 +31,6 @@ public class DropperCamera : MonoBehaviour {
 	private float rotWaiting = 0f;
 	// -1 for backwards, 1 for forwards
 	private int rotAngle = 0;
-
-	// Mouse-to-world positions!
-	private float mouseX = 0f;
-	private float mouseY = 0f;
-	private float mouseZ = 0f;
 
 	// Cooldown for block placing
 	private float blockWaitTime = 0.5f;
@@ -52,13 +48,13 @@ public class DropperCamera : MonoBehaviour {
 	void VerticalMoveUpdate()
 	{
 		float currentY = transform.position.y;
-		float targetY = tower.transform.position.y + verticalHeight;
+		float targetY = tower.GetComponent<TowerManager>().getHeight() + verticalHeight;
 
 		if (moving <= 0f)
 		{
 			posDifference = targetY - currentY;
 
-			if (posDifference > verticalHeight || posDifference < -verticalHeight)
+			if (posDifference > 0 || posDifference < 0)
 			{
 				moving = moveTime;
 			}
@@ -74,6 +70,9 @@ public class DropperCamera : MonoBehaviour {
 
 	void rotateUpdate()
 	{
+		// Point at the tower object
+		transform.LookAt(tower.transform);	
+
 		// Only rotate if the time has elapsed
 		if (rotWaiting <= 0f)
 		{
@@ -102,10 +101,7 @@ public class DropperCamera : MonoBehaviour {
 				transform.RotateAround(tower.transform.position, Vector3.up, targetAngle - transform.eulerAngles.y);
 			}
 			
-			// Point at the tower object
-			transform.LookAt(tower.transform);
-			
-			
+					
 		}
 	}
 
@@ -115,12 +111,37 @@ public class DropperCamera : MonoBehaviour {
 			// Left mouse click
 			if (Input.GetMouseButtonDown(0))
 			{
-				GameObject b = (GameObject)Object.Instantiate(block, tower.transform.position, Quaternion.identity);
-				b.transform.parent = tower.transform;
+				// Draw the block "preview" before the mouse is released
+				if (blockPlace == null)
+				{
+					blockPlace = tower.GetComponent<TowerManager>().createBlock();
+				}
+			} else if (Input.GetMouseButtonUp(0))
+			{
+				// Wake up the block - time to drop
+				blockPlace.GetComponent<BlockManage>().Awaken();
+
+				// Reset the timer so the player has to wait a bit before spawning another block
 				blockWaiting = blockWaitTime;
+				blockPlace = null;
 			}
 		} else {
 			blockWaiting -= Time.deltaTime;
+		}
+
+		if (blockPlace)
+		{
+			// Line tracing for "previews"
+			Plane plane = new Plane(Vector3.up, 0);
+			
+			float distance;
+			Ray ray = GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+			if (plane.Raycast(ray, out distance))
+			{
+				Vector3 pt = ray.GetPoint(distance);
+				// TODO: Predicting the place
+				blockPlace.transform.position = new Vector3(pt.x, blockPlace.transform.position.y, pt.z); //+ new Vector3(0f, blockPlace.transform.localScale.y, 0f);
+			}
 		}
 	}
 

@@ -186,6 +186,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5871fec15c015de48ae4b8efc5ead800, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  block: {fileID: 107870, guid: c30cfdf81d863fd48884a9a0984e5dce, type: 2}
 --- !u!1001 &1060534064
 Prefab:
   m_ObjectHideFlags: 0
@@ -195,7 +196,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 400002, guid: 11a0fc37ad0fcd84ea652130b8070601, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -.159999996
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 11a0fc37ad0fcd84ea652130b8070601, type: 2}
       propertyPath: m_LocalPosition.y
@@ -211,7 +212,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 11a0fc37ad0fcd84ea652130b8070601, type: 2}
       propertyPath: m_LocalRotation.y
-      value: .99999398
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 11a0fc37ad0fcd84ea652130b8070601, type: 2}
       propertyPath: m_LocalRotation.z
@@ -219,7 +220,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 11a0fc37ad0fcd84ea652130b8070601, type: 2}
       propertyPath: m_LocalRotation.w
-      value: -.00347278756
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 11a0fc37ad0fcd84ea652130b8070601, type: 2}
       propertyPath: m_RootOrder
@@ -233,6 +234,10 @@ Prefab:
       propertyPath: airAccel
       value: 35
       objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: 11a0fc37ad0fcd84ea652130b8070601, type: 2}
+      propertyPath: mainCam
+      value: 
+      objectReference: {fileID: 1332098881}
     m_RemovedComponents:
     - {fileID: 11400002, guid: 11a0fc37ad0fcd84ea652130b8070601, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 11a0fc37ad0fcd84ea652130b8070601, type: 2}
@@ -250,7 +255,7 @@ GameObject:
   - 23: {fileID: 1303969251}
   m_Layer: 0
   m_Name: Cube
-  m_TagString: Untagged
+  m_TagString: FreezeOnTouch
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -265,7 +270,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 589cf2b583db2584e9cf2eebfc54afb9, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_UseLightProbes: 1
@@ -305,7 +310,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1303969250}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -.5, z: 0}
+  m_LocalPosition: {x: 0, y: -2, z: 0}
   m_LocalScale: {x: 20, y: 1, z: 20}
   m_Children: []
   m_Father: {fileID: 0}
@@ -390,8 +395,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1332098876}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: -4.37113883e-08}
+  m_LocalPosition: {x: 0, y: 3.25, z: 9.85999966}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -408,12 +413,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1793822294}
-  targetOffset: {x: 0, y: 3.5, z: 7}
-  lockRotation: 0
+  targetOffset: {x: 0, y: 2, z: -5}
+  lockRotation: 1
   followSpeed: 6
   inputRotationSpeed: 100
   mouseFreelook: 0
-  rotateDamping: 500
+  rotateDamping: 50
   waterFilter: {fileID: 0}
   avoidClippingTags:
   - 
@@ -522,7 +527,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tower: {fileID: 265051939}
-  block: {fileID: 100000, guid: 961b9c116a0ab924f92702dd50898555, type: 2}
   snapAngle: 90
 --- !u!4 &1793822294 stripped
 Transform:

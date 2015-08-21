@@ -12,6 +12,7 @@ TagManager:
   - MovingPlatform
   - Checkpoint
   - Waypoint
+  - FreezeOnTouch
   layers:
   - Default
   - TransparentFX
