@@ -3,9 +3,6 @@ using System.Collections;
 
 public class DropperCamera : MonoBehaviour {
 
-	// The tower "object" - comprised of the blocks themselves
-	public GameObject tower;
-
 	// Used for placing new blocks on screen
 	private GameObject blockPlace;
 
@@ -13,6 +10,8 @@ public class DropperCamera : MonoBehaviour {
 	// The increments the camera is snapped to when rotating
 	// Not advised that you change this, but if you want to...
 	public int snapAngle = 90;
+
+	private float initAngle;
 
 	// How fast the camera moves up to the top of the building in seconds
 	private float moveTime = 0.5f;
@@ -22,8 +21,7 @@ public class DropperCamera : MonoBehaviour {
 	private float posDifference = 0f;
 
 	// How far the camera sits above the tower
-	private float verticalHeight = 6f;
-	
+	private float verticalHeight = 8f;
 
 	// How much time to wait between rotations, in sec
 	private float rotWaitTime = 0.25f;
@@ -33,22 +31,32 @@ public class DropperCamera : MonoBehaviour {
 	private int rotAngle = 0;
 
 	// Cooldown for block placing
-	private float blockWaitTime = 0.5f;
+	private float blockWaitTime = 0.25f;
 	private float blockWaiting = 0f;
 
-	// Makes blocks stack on top of tower
-	// Change at risk of losing sanity
-	private bool blocksOnTop = true;
+
+	private TowerManager tower;
+	private GameObject player;
 
 	// Use this for initialization
 	void Start () {
-	
+		// Get the tower object
+		tower = GameManager.instance.getTower();
+		player = GameManager.instance.getPlayer();
+
+		// Set the initial angle based on the camera's rotation
+		initAngle = transform.eulerAngles.y;
+	}
+
+	public Vector3 getEulerAngles()
+	{
+		return transform.eulerAngles;
 	}
 
 	void VerticalMoveUpdate()
 	{
 		float currentY = transform.position.y;
-		float targetY = tower.GetComponent<TowerManager>().getHeight() + verticalHeight;
+		float targetY = player.transform.position.y + verticalHeight;
 
 		if (moving <= 0f)
 		{
@@ -64,15 +72,11 @@ public class DropperCamera : MonoBehaviour {
 			{
 				transform.position = transform.position + new Vector3(0f, (posDifference/moveTime) * Time.deltaTime, 0f);
 			}
-			// Possible TODO: Add snapping?
 		}
 	}
 
 	void rotateUpdate()
 	{
-		// Point at the tower object
-		transform.LookAt(tower.transform);	
-
 		// Only rotate if the time has elapsed
 		if (rotWaiting <= 0f)
 		{
@@ -84,7 +88,6 @@ public class DropperCamera : MonoBehaviour {
 				
 				// Make the user wait before they can rotate again
 				rotWaiting = rotWaitTime;
-				
 			}
 		} else {
 			// Decrease the rotation time
@@ -94,14 +97,12 @@ public class DropperCamera : MonoBehaviour {
 			// If the rotation timer has elapsed, snap to the angle (prevents overshooting)
 			if (rotWaiting > 0)
 			{
-				transform.RotateAround(tower.transform.position, Vector3.up, rotAngle * ((snapAngle / rotWaitTime) * Time.deltaTime));
+				transform.RotateAround(tower.getPos(), Vector3.up, rotAngle * ((snapAngle / rotWaitTime) * Time.deltaTime));
 			} else {
 				// Round the angle
-				float targetAngle = Mathf.Round(transform.eulerAngles.y / snapAngle) * snapAngle;
-				transform.RotateAround(tower.transform.position, Vector3.up, targetAngle - transform.eulerAngles.y);
-			}
-			
-					
+				float targetAngle = Mathf.Round((transform.eulerAngles.y - initAngle) / snapAngle) * snapAngle;
+				transform.RotateAround(tower.getPos(), Vector3.up, targetAngle - (transform.eulerAngles.y - initAngle));
+			}	
 		}
 	}
 
@@ -114,35 +115,38 @@ public class DropperCamera : MonoBehaviour {
 				// Draw the block "preview" before the mouse is released
 				if (blockPlace == null)
 				{
-					blockPlace = tower.GetComponent<TowerManager>().createBlock();
+					blockPlace = tower.createBlock();
 				}
 			} else if (Input.GetMouseButtonUp(0))
 			{
 				// Wake up the block - time to drop
-				blockPlace.GetComponent<BlockManage>().Awaken();
+				blockPlace.GetComponent<Block>().Drop();
 
 				// Reset the timer so the player has to wait a bit before spawning another block
 				blockWaiting = blockWaitTime;
 				blockPlace = null;
 			}
+
+			if (blockPlace)
+			{
+				// Line tracing for "previews"
+				Plane plane = new Plane(Vector3.up, 0);
+				
+				float distance;
+				Ray ray = GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+				if (plane.Raycast(ray, out distance))
+				{
+					Vector3 pt = ray.GetPoint(distance);
+					// TODO: Predicting the place
+					// TODO: DON'T HARD CODE THIS PLEASE FIX THIS SOON
+					blockPlace.transform.position = new Vector3(Mathf.Clamp(pt.x, 2f, tower.mapXSize - 1), tower.getHeight (), Mathf.Clamp(pt.z, 2f, tower.mapZSize - 1)); //+ new Vector3(0f, blockPlace.transform.localScale.y, 0f);
+				}
+			}
 		} else {
 			blockWaiting -= Time.deltaTime;
 		}
 
-		if (blockPlace)
-		{
-			// Line tracing for "previews"
-			Plane plane = new Plane(Vector3.up, 0);
-			
-			float distance;
-			Ray ray = GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
-			if (plane.Raycast(ray, out distance))
-			{
-				Vector3 pt = ray.GetPoint(distance);
-				// TODO: Predicting the place
-				blockPlace.transform.position = new Vector3(pt.x, blockPlace.transform.position.y, pt.z); //+ new Vector3(0f, blockPlace.transform.localScale.y, 0f);
-			}
-		}
+
 	}
 
 	// Update is called once per frame
