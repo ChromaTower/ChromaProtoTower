@@ -324,16 +324,40 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 11a0fc37ad0fcd84ea652130b8070601, type: 2}
       propertyPath: jumpForce.y
-      value: 17
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 11a0fc37ad0fcd84ea652130b8070601, type: 2}
       propertyPath: airAccel
-      value: 35
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 11a0fc37ad0fcd84ea652130b8070601, type: 2}
       propertyPath: mainCam
       value: 
       objectReference: {fileID: 1332098881}
+    - target: {fileID: 400002, guid: 11a0fc37ad0fcd84ea652130b8070601, type: 2}
+      propertyPath: m_LocalScale.x
+      value: .5
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 11a0fc37ad0fcd84ea652130b8070601, type: 2}
+      propertyPath: m_LocalScale.y
+      value: .5
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 11a0fc37ad0fcd84ea652130b8070601, type: 2}
+      propertyPath: m_LocalScale.z
+      value: .5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: 11a0fc37ad0fcd84ea652130b8070601, type: 2}
+      propertyPath: airDecel
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: 11a0fc37ad0fcd84ea652130b8070601, type: 2}
+      propertyPath: secondJumpForce.y
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: 11a0fc37ad0fcd84ea652130b8070601, type: 2}
+      propertyPath: thirdJumpForce.y
+      value: 13
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 11400002, guid: 11a0fc37ad0fcd84ea652130b8070601, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 11a0fc37ad0fcd84ea652130b8070601, type: 2}
@@ -655,11 +679,11 @@ Camera:
     y: 0
     width: .5
     height: 1
-  near clip plane: .300000012
+  near clip plane: -10
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 9
+  orthographic size: 10
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
