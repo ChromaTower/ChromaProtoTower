@@ -191,6 +191,9 @@ MonoBehaviour:
   mapXSize: 15
   mapYSize: 100
   mapZSize: 15
+  blockArraySizeX: 0
+  blockArraySizeY: 0
+  blockArraySizeZ: 0
 --- !u!1 &335097398
 GameObject:
   m_ObjectHideFlags: 0
@@ -483,7 +486,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1793822294}
-  targetOffset: {x: 0, y: 2, z: -5}
+  targetOffset: {x: 0, y: 2, z: -7}
   lockRotation: 1
   followSpeed: 6
   inputRotationSpeed: 100

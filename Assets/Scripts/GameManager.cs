@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour {
 
 		DontDestroyOnLoad(gameObject);
 		tower = GameObject.Find("Tower").GetComponent<TowerManager>();
-		camera = GameObject.Find("Camera").GetComponent<DropperCamera>();
+		//camera = GameObject.Find("Camera").GetComponent<DropperCamera>();
 		player = GameObject.Find("Player");
 	}
 

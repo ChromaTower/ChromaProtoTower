@@ -17,9 +17,9 @@ public class TowerManager : MonoBehaviour {
 	public int mapYSize = 100;
 	public int mapZSize = 20;
 
-	private int blockArraySizeX;
-	private int blockArraySizeY;
-	private int blockArraySizeZ;
+	public int blockArraySizeX;
+	public int blockArraySizeY;
+	public int blockArraySizeZ;
 	private bool[, ,] blockArray;
 
 
@@ -72,6 +72,17 @@ public class TowerManager : MonoBehaviour {
 		}
 	}
 
+	public bool checkBounds(int x, int y, int z)
+	{
+		// Return if the position is valid
+		if ((x >= 0 && x <= blockArraySizeX - 1) && (y >= 0 && y <= blockArraySizeY - 1) && (z >= 0 && z <= blockArraySizeZ - 1))
+		{
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	// Returns true/false depending on if an object is in a position
 	public bool checkPos(Vector3 pos)
 	{
@@ -81,10 +92,14 @@ public class TowerManager : MonoBehaviour {
 		int z = Mathf.Clamp ((int)pos.z, 0, blockArraySizeZ);
 
 		//print ("Checking (" + x + ", " + y + ", " + z + ")");
-
-		if (blockArray[x, y, z] == true)
+		if (checkBounds(x, y, z))
 		{
-			return true;
+			if (blockArray[x, y, z] == true)
+			{
+				return true;
+			} else {
+				return false;
+			}
 		} else {
 			return false;
 		}
@@ -115,12 +130,13 @@ public class TowerManager : MonoBehaviour {
 		int z = (int)pos.z;
 
 		// Only add the block if it's actually possible...
-		if ((x >= 0 && x <= blockArraySizeX) && (y >= 0 && y <= blockArraySizeY) && (z >= 0 && z <= blockArraySizeZ))
+		if (checkBounds(x, y, z))
 		{
-			//print ("(" + x + ", " + y + ", " + z + ")");
 			blockArray[x, y, z] = true;
+			print ("(" + x + ", " + y + ", " + z + ") registered successfully.");
 			return true;
 		} else {
+			print ("(" + x + ", " + y + ", " + z + ") failed.");
 			return false;
 		}
 	}
@@ -133,7 +149,7 @@ public class TowerManager : MonoBehaviour {
 		int z = (int)pos.z;
 
 		// Only remove the block if it's actually a valid index
-		if ((x >= 0 && x <= blockArraySizeX) && (y >= 0 && y <= blockArraySizeY) && (z >= 0 && z <= blockArraySizeZ))
+		if (checkBounds(x, y, z))
 		{
 			blockArray[x, y, z] = false;
 		}

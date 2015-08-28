@@ -38,6 +38,8 @@ public class DropperCamera : MonoBehaviour {
 	private TowerManager tower;
 	private GameObject player;
 
+	private float camMouseY = 0f;
+
 	// Use this for initialization
 	void Start () {
 		// Get the tower object
@@ -56,7 +58,7 @@ public class DropperCamera : MonoBehaviour {
 	void VerticalMoveUpdate()
 	{
 		float currentY = transform.position.y;
-		float targetY = player.transform.position.y + verticalHeight;
+		float targetY = camMouseY + verticalHeight;
 
 		if (moving <= 0f)
 		{
@@ -108,6 +110,17 @@ public class DropperCamera : MonoBehaviour {
 
 	void mouseUpdate()
 	{
+		if (Input.mousePosition.y > 500)
+		{
+			camMouseY += 0.05f * ((Input.mousePosition.y - 500)/100) ;
+		} else if (Input.mousePosition.y < 100)
+		{
+			if (camMouseY > 0)
+			{
+				camMouseY -= 0.05f * ((100 - Input.mousePosition.y)/100) ;
+			}
+		}
+
 		if (blockWaiting <= 0f) {
 			// Left mouse click
 			if (Input.GetMouseButtonDown(0))
