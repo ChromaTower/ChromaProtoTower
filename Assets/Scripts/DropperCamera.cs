@@ -29,6 +29,7 @@ public class DropperCamera : MonoBehaviour {
 	private float rotWaiting = 0f;
 	// -1 for backwards, 1 for forwards
 	private int rotAngle = 0;
+	private float targetAngle = 0;
 
 	// Cooldown for block placing
 	private float blockWaitTime = 0.25f;
@@ -87,7 +88,7 @@ public class DropperCamera : MonoBehaviour {
 			if (scroll != 0)
 			{
 				rotAngle = (int)Mathf.Sign(scroll);
-				
+
 				// Make the user wait before they can rotate again
 				rotWaiting = rotWaitTime;
 			}
@@ -102,17 +103,17 @@ public class DropperCamera : MonoBehaviour {
 				transform.RotateAround(tower.getPos(), Vector3.up, rotAngle * ((snapAngle / rotWaitTime) * Time.deltaTime));
 			} else {
 				// Round the angle
-				float targetAngle = Mathf.Round((transform.eulerAngles.y - initAngle) / snapAngle) * snapAngle;
+				targetAngle = Mathf.Round((transform.eulerAngles.y - initAngle) / snapAngle) * snapAngle;
 				transform.RotateAround(tower.getPos(), Vector3.up, targetAngle - (transform.eulerAngles.y - initAngle));
-			}	
+			}
 		}
 	}
 
 	void mouseUpdate()
 	{
-		if (Input.mousePosition.y > 500)
+		if (Input.mousePosition.y > (Screen.height - 100))
 		{
-			camMouseY += 0.05f * ((Input.mousePosition.y - 500)/100) ;
+			camMouseY += 0.05f * ((Input.mousePosition.y - (Screen.height - 100))/100) ;
 		} else if (Input.mousePosition.y < 100)
 		{
 			if (camMouseY > 0)
@@ -142,6 +143,11 @@ public class DropperCamera : MonoBehaviour {
 
 			if (blockPlace)
 			{
+				if (Input.GetMouseButtonDown(1))
+				{
+					blockPlace.transform.RotateAround(blockPlace.transform.position, Vector3.up, snapAngle);
+				}
+
 				// Line tracing for "previews"
 				Plane plane = new Plane(Vector3.up, 0);
 				
@@ -151,8 +157,9 @@ public class DropperCamera : MonoBehaviour {
 				{
 					Vector3 pt = ray.GetPoint(distance);
 					// TODO: Predicting the place
-					// TODO: DON'T HARD CODE THIS PLEASE FIX THIS SOON
-					blockPlace.transform.position = new Vector3(Mathf.Clamp(pt.x, 2f, tower.mapXSize - 1), tower.getHeight (), Mathf.Clamp(pt.z, 2f, tower.mapZSize - 1)); //+ new Vector3(0f, blockPlace.transform.localScale.y, 0f);
+					blockPlace.transform.position = new Vector3(Mathf.Clamp(pt.x, tower.transform.position.x - (tower.mapXSize/2), tower.transform.position.x + (tower.mapXSize/2)),
+					                                  tower.transform.position.y,
+					                                  Mathf.Clamp(pt.z, tower.transform.position.z - (tower.mapZSize/2), tower.transform.position.z + (tower.mapZSize/2)));
 				}
 			}
 		} else {

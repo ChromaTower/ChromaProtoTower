@@ -39,7 +39,7 @@ public class PlayerMove : MonoBehaviour
 	private Transform[] floorCheckers;
 	private Quaternion screenMovementSpace;
 	private float airPressTime, groundedCount, curAccel, curDecel, curRotateSpeed, slope;
-	private Vector3 direction, moveDirection, screenMovementForward, screenMovementRight, movingObjSpeed;
+	private Vector3 turnDirection, walkDirection, moveDirection, screenMovementForward, screenMovementRight, movingObjSpeed;
 	
 	private CharacterMotor characterMotor;
 	private EnemyAI enemyAI;
@@ -47,7 +47,7 @@ public class PlayerMove : MonoBehaviour
 	
 	//setup
 	void Awake()
-	{
+	{	
 		//create single floorcheck in centre of object, if none are assigned
 		if(!floorChecks)
 		{
@@ -99,10 +99,19 @@ public class PlayerMove : MonoBehaviour
 		
 		//only apply vertical input to movemement, if player is not sidescroller
 		if(!sidescroller)
-			direction = (screenMovementForward * v) + (screenMovementRight * h);
+		{
+			turnDirection = screenMovementRight * h;
+			walkDirection = screenMovementForward * v;
+		}
 		else
-			direction = Vector3.right * h;
-		moveDirection = transform.position + direction;
+		{
+			turnDirection = Vector3.right * h;
+			walkDirection = Vector3.right * h;
+		}
+
+		moveDirection = transform.position + turnDirection;
+
+		walkDirection = transform.position + walkDirection;
 	}
 	
 	//apply correct player movement (fixedUpdate for physics calculations)
@@ -111,9 +120,10 @@ public class PlayerMove : MonoBehaviour
 		//are we grounded
 		grounded = IsGrounded ();
 		//move, rotate, manage speed
-		characterMotor.MoveTo (moveDirection, curAccel, 0.7f, true);
-		if (rotateSpeed != 0 && direction.magnitude != 0)
+		characterMotor.MoveTo (walkDirection, curAccel, 0.7f, true);
+		if (rotateSpeed != 0 && turnDirection.magnitude != 0)
 			characterMotor.RotateToDirection (moveDirection , curRotateSpeed * 5, true);
+
 		characterMotor.ManageSpeed (curDecel, maxSpeed + movingObjSpeed.magnitude, true);
 		//set animation values
 		if(animator)
@@ -131,11 +141,11 @@ public class PlayerMove : MonoBehaviour
 		if (other.collider.tag != "Untagged" || grounded == false)
 			return;
 		//if no movement should be happening, stop player moving in Z/X axis
-		if(direction.magnitude == 0 && slope < slopeLimit && GetComponent<Rigidbody>().velocity.magnitude < 2)
+		if(turnDirection.magnitude == 0 && slope < slopeLimit && GetComponent<Rigidbody>().velocity.magnitude < 2)
 		{
 			//it's usually not a good idea to alter a rigidbodies velocity every frame
 			//but this is the cleanest way i could think of, and we have a lot of checks beforehand, so it shou
-			GetComponent<Rigidbody>().velocity = Vector3.zero;
+			//GetComponent<Rigidbody>().velocity = Vector3.zero;
 		}
 	}
 	

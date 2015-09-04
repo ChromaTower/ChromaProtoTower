@@ -22,6 +22,14 @@ public class TowerManager : MonoBehaviour {
 	public int blockArraySizeZ;
 	private bool[, ,] blockArray;
 
+	public float minX = 0;
+	public float minY = 0;
+	public float minZ = 0;
+
+	public float maxX = 0;
+	public float maxY = 0;
+	public float maxZ = 0;
+
 
 
 	// Use this for initialization
@@ -30,6 +38,14 @@ public class TowerManager : MonoBehaviour {
 		blockArraySizeY = (int)(mapYSize / snap);
 		blockArraySizeZ = (int)(mapZSize / snap);
 		blockArray = new bool[blockArraySizeX, blockArraySizeY, blockArraySizeZ];
+
+		minX = transform.position.x - (mapXSize/2);
+		minY = transform.position.y - (mapYSize/2);
+		minZ = transform.position.z - (mapZSize/2);
+
+		maxX = transform.position.x + (mapXSize/2);
+		maxY = transform.position.y + (mapYSize/2);
+		maxZ = transform.position.z + (mapZSize/2);
 	}
 
 	public float getSnap()
@@ -59,11 +75,45 @@ public class TowerManager : MonoBehaviour {
 		return blocks;
 	}
 
+	// Deregisters all the parts of a tetromino
+	public void deregisterBlock(GameObject o)
+	{
+		foreach(GameObject s in o.GetComponent<Block>().getShape())
+		{
+			Vector3 posDifference = new Vector3((int)((s.transform.position.x - o.transform.position.x) / snap), 
+			                                    (int)((s.transform.position.y - o.transform.position.y) / snap), 
+			                                    (int)((s.transform.position.z  - o.transform.position.z)/ snap));
+			deregisterPos(posDifference + o.GetComponent<Block>().getTarget());
+		}
+	}
+
+	private void checkIntegrity()
+	{
+		// TODO: this
+	}
+
+	public void registerBlock(GameObject o)
+	{
+		foreach(GameObject s in o.GetComponent<Block>().getShape())
+		{
+			Vector3 posDifference = new Vector3((int)((s.transform.position.x - o.transform.position.x) / snap), 
+			                                    (int)((s.transform.position.y - o.transform.position.y) / snap), 
+			                                    (int)((s.transform.position.z  - o.transform.position.z)/ snap));
+			registerPos(posDifference + o.GetComponent<Block>().getTarget());
+		}
+	}
+
+
 	// Attempts to remove a block
 	public bool removeBlock(GameObject o)
 	{
 		if (blocks.Contains (o))
 		{
+			if (o.GetComponent<Block>().isActivated())
+			{
+				deregisterBlock(o);
+			}
+
 			blocks.Remove (o);
 			Destroy(o);
 			return true;
@@ -128,8 +178,9 @@ public class TowerManager : MonoBehaviour {
 		int x = (int)pos.x;
 		int y = (int)pos.y;
 		int z = (int)pos.z;
-
+	
 		// Only add the block if it's actually possible...
+
 		if (checkBounds(x, y, z))
 		{
 			blockArray[x, y, z] = true;
@@ -152,6 +203,7 @@ public class TowerManager : MonoBehaviour {
 		if (checkBounds(x, y, z))
 		{
 			blockArray[x, y, z] = false;
+			checkIntegrity ();
 		}
 	}
 
@@ -167,7 +219,7 @@ public class TowerManager : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		transform.position = new Vector3(transform.position.x, getHeight() + 4f, transform.position.z);
+		transform.position = new Vector3(transform.position.x, getHeight() + 10f, transform.position.z);
 	}
 
 	public Vector3 getPos()

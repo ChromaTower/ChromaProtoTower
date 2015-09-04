@@ -24,19 +24,20 @@ public class CharacterMotor : MonoBehaviour
 		{
 			PhysicMaterial pMat = new PhysicMaterial();
 			pMat.name = "Frictionless";
-			pMat.frictionCombine = PhysicMaterialCombine.Multiply;
-			pMat.bounceCombine = PhysicMaterialCombine.Multiply;
+			pMat.frictionCombine = PhysicMaterialCombine.Minimum; //formerly Multiply;
+			pMat.bounceCombine = PhysicMaterialCombine.Minimum;   // formerlyMultiply;
 			pMat.dynamicFriction = 0f;
 			pMat.staticFriction = 0f;
 			GetComponent<Collider>().material = pMat;
 			Debug.LogWarning("No physics material found for CharacterMotor, a frictionless one has been created and assigned", transform);
 		}
 	}
-	
+
 	//move rigidbody to a target and return the bool "have we arrived?"
 	public bool MoveTo(Vector3 destination, float acceleration, float stopDistance, bool ignoreY)
 	{
 		Vector3 relativePos = (destination - transform.position);
+
 		if(ignoreY)
 			relativePos.y = 0;
 		
