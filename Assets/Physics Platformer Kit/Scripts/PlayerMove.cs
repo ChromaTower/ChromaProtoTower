@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using GamepadInput;
 
 //handles player movement, utilising the CharacterMotor class
 [RequireComponent(typeof(CharacterMotor))]
@@ -7,6 +8,9 @@ using System.Collections;
 [RequireComponent(typeof(AudioSource))]
 public class PlayerMove : MonoBehaviour 
 {
+	private float xGPPrev = 0;
+	public bool alive = true;
+
 	//setup
 	public bool sidescroller;					//if true, won't apply vertical input
 	public Transform mainCam, floorChecks;		//main camera, and floorChecks object. FloorChecks are raycasted down from to check the player is grounded.
@@ -44,6 +48,8 @@ public class PlayerMove : MonoBehaviour
 	private CharacterMotor characterMotor;
 	private EnemyAI enemyAI;
 	private DealDamage dealDamage;
+
+	private Vector3 startPos;
 	
 	//setup
 	void Awake()
@@ -76,8 +82,32 @@ public class PlayerMove : MonoBehaviour
 		floorCheckers = new Transform[floorChecks.childCount];
 		for (int i=0; i < floorCheckers.Length; i++)
 			floorCheckers[i] = floorChecks.GetChild(i);
+
+		startPos = transform.position;
 	}
-	
+
+	public void reset()
+	{
+		GameManager.instance.getBlobbi().GetComponent<BlobbiManager>().GetComponent<Renderer>().material.color = new Color (1f, 1f, 1f, 1f);
+		Rigidbody rb = characterMotor.GetComponent<Rigidbody>();
+		rb.isKinematic = false;
+		rb.detectCollisions = true;
+		transform.position = startPos;
+		alive = true;
+	}
+
+
+
+	public void death()
+	{
+		GameManager.instance.getBlobbi().GetComponent<BlobbiManager>().GetComponent<Renderer>().material.color = new Color (0f, 0f, 0f, 0f);
+		Rigidbody rb = characterMotor.GetComponent<Rigidbody>();
+		rb.isKinematic = true;
+		rb.detectCollisions = false;
+		alive = false;
+
+	}
+
 	//get state of player, values and input
 	void Update()
 	{	
@@ -94,8 +124,15 @@ public class PlayerMove : MonoBehaviour
 		screenMovementRight = screenMovementSpace * Vector3.right;
 		
 		//get movement input, set direction to move in
-		float h = Input.GetAxisRaw ("Horizontal");
-		float v = Input.GetAxisRaw ("Vertical");
+		float h, v;
+		if (GameManager.instance.controller)
+		{
+			h = GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.One).x;
+			v = GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.One).y;
+		} else {
+			h = Input.GetAxisRaw ("Horizontal");
+			v = Input.GetAxisRaw ("Vertical");
+		}
 		
 		//only apply vertical input to movemement, if player is not sidescroller
 		if(!sidescroller)
@@ -217,14 +254,24 @@ public class PlayerMove : MonoBehaviour
 			GetComponent<AudioSource>().Play ();
 		}
 		//if we press jump in the air, save the time
-		if (Input.GetButtonDown ("Jump") && !grounded)
-			airPressTime = Time.time;
+
+		if (!grounded)
+		{
+			if (GameManager.instance.controller && GamePad.GetButtonDown(GamePad.Button.A, GamePad.Index.One)
+			    || !GameManager.instance.controller && Input.GetButtonDown ("Jump"))
+			{
+				airPressTime = Time.time;
+			}
+		}
+			
 		
 		//if were on ground within slope limit
 		if (grounded && slope < slopeLimit)
 		{
 			//and we press jump, or we pressed jump justt before hitting the ground
-			if (Input.GetButtonDown ("Jump") || airPressTime + jumpLeniancy > Time.time)
+			if ((GamePad.GetButtonDown(GamePad.Button.A, GamePad.Index.One) && GameManager.instance.controller) 
+			    || (!GameManager.instance.controller && Input.GetButtonDown ("Jump"))
+			    || airPressTime + jumpLeniancy > Time.time)
 			{	
 				//increment our jump type if we haven't been on the ground for long
 				onJump = (groundedCount < jumpDelay) ? Mathf.Min(2, onJump + 1) : 0;

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using GamepadInput;
 
 public class DropperCamera : MonoBehaviour {
 
@@ -40,6 +41,9 @@ public class DropperCamera : MonoBehaviour {
 	private GameObject player;
 
 	private float camMouseY = 0f;
+	private float camX = 0f;
+	private float camZ = 0f;
+
 
 	// Use this for initialization
 	void Start () {
@@ -83,7 +87,18 @@ public class DropperCamera : MonoBehaviour {
 		// Only rotate if the time has elapsed
 		if (rotWaiting <= 0f)
 		{
-			int scroll = (int)Input.GetAxis("Mouse ScrollWheel");
+			int scroll;
+
+			if (GameManager.instance.controller)
+			{
+				int scroll1 = GamePad.GetButtonUp (GamePad.Button.RightShoulder, GamePad.Index.Two) ? 1 : 0;
+				int scroll2 = GamePad.GetButtonUp (GamePad.Button.LeftShoulder, GamePad.Index.Two) ? 1 : 0;
+				scroll = (scroll2 - scroll1);
+			} else {
+				// Mouse instead
+				scroll = (int)Input.GetAxis("Mouse ScrollWheel");
+			}
+
 			
 			if (scroll != 0)
 			{
@@ -111,55 +126,104 @@ public class DropperCamera : MonoBehaviour {
 
 	void mouseUpdate()
 	{
-		if (Input.mousePosition.y > (Screen.height - 100))
+		if (GameManager.instance.controller)
 		{
-			camMouseY += 0.05f * ((Input.mousePosition.y - (Screen.height - 100))/100) ;
-		} else if (Input.mousePosition.y < 100)
-		{
-			if (camMouseY > 0)
-			{
-				camMouseY -= 0.05f * ((100 - Input.mousePosition.y)/100) ;
-			}
+			camMouseY += GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.Two).y * Time.deltaTime * 10;
 		}
+		else
+		{
+			if (Input.mousePosition.y > (Screen.height - 100))
+			{
+				camMouseY += 0.05f * ((Input.mousePosition.y - (Screen.height - 100))/100) ;
+			} else if (Input.mousePosition.y < 100)
+			{
+				if (camMouseY > 0)
+				{
+					camMouseY -= 0.05f * ((100 - Input.mousePosition.y)/100) ;
+				}
+			}
+		} 
+
 
 		if (blockWaiting <= 0f) {
-			// Left mouse click
-			if (Input.GetMouseButtonDown(0))
+			if (GameManager.instance.controller)
 			{
-				// Draw the block "preview" before the mouse is released
-				if (blockPlace == null)
+				if (GamePad.GetButtonDown (GamePad.Button.A, GamePad.Index.Two))
 				{
-					blockPlace = tower.createBlock();
-				}
-			} else if (Input.GetMouseButtonUp(0))
-			{
-				// Wake up the block - time to drop
-				blockPlace.GetComponent<Block>().Drop();
-
-				// Reset the timer so the player has to wait a bit before spawning another block
-				blockWaiting = blockWaitTime;
-				blockPlace = null;
-			}
-
-			if (blockPlace)
-			{
-				if (Input.GetMouseButtonDown(1))
+					// Draw the block "preview" before the mouse is released
+					if (blockPlace == null)
+					{
+						blockPlace = tower.createBlock();
+					}
+				} else if (GamePad.GetButtonUp (GamePad.Button.A, GamePad.Index.Two))
 				{
-					blockPlace.transform.RotateAround(blockPlace.transform.position, Vector3.up, snapAngle);
-				}
+					// Wake up the block - time to drop
+					blockPlace.GetComponent<Block>().Drop();
 
-				// Line tracing for "previews"
-				Plane plane = new Plane(Vector3.up, 0);
+					// Reset the timer so the player has to wait a bit before spawning another block
+					blockWaiting = blockWaitTime;
+					blockPlace = null;
+				}
 				
-				float distance;
-				Ray ray = GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
-				if (plane.Raycast(ray, out distance))
+				if (blockPlace)
 				{
-					Vector3 pt = ray.GetPoint(distance);
-					// TODO: Predicting the place
-					blockPlace.transform.position = new Vector3(Mathf.Clamp(pt.x, tower.transform.position.x - (tower.mapXSize/2), tower.transform.position.x + (tower.mapXSize/2)),
-					                                  tower.transform.position.y,
-					                                  Mathf.Clamp(pt.z, tower.transform.position.z - (tower.mapZSize/2), tower.transform.position.z + (tower.mapZSize/2)));
+					if (GamePad.GetButtonUp(GamePad.Button.B, GamePad.Index.Two))
+					{
+						blockPlace.transform.RotateAround(blockPlace.transform.position, Vector3.up, snapAngle);
+					}
+
+					camX += GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.Two).x * Time.deltaTime * 15f;
+					camZ += GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.Two).y * Time.deltaTime * 15f;
+
+					TowerManager tower = GameManager.instance.getTower ();
+					camX = Mathf.Clamp (camX, tower.transform.position.x - tower.mapXSize, tower.transform.position.x + tower.mapXSize);
+					camZ = Mathf.Clamp (camZ, tower.transform.position.z - tower.mapZSize, tower.transform.position.z + tower.mapZSize);
+
+					blockPlace.transform.position = new Vector3(camX,
+					                                            tower.transform.position.y,
+					                                            camZ);
+
+				}
+			}
+			else
+			{
+				if (Input.GetMouseButtonDown(0))
+				{
+					// Draw the block "preview" before the mouse is released
+					if (blockPlace == null)
+					{
+						blockPlace = tower.createBlock();
+					}
+				} else if (Input.GetMouseButtonUp(0))
+				{
+					// Wake up the block - time to drop
+					blockPlace.GetComponent<Block>().Drop();
+					
+					// Reset the timer so the player has to wait a bit before spawning another block
+					blockWaiting = blockWaitTime;
+					blockPlace = null;
+				}
+				
+				if (blockPlace)
+				{
+					if (Input.GetMouseButtonDown(1))
+					{
+						blockPlace.transform.RotateAround(blockPlace.transform.position, Vector3.up, snapAngle);
+					}
+					
+					// Line tracing for "previews"
+					Plane plane = new Plane(Vector3.up, 0);
+					
+					float distance;
+					Ray ray = GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+					if (plane.Raycast(ray, out distance))
+					{
+						Vector3 pt = ray.GetPoint(distance);
+						// TODO: Predicting the place
+						blockPlace.transform.position = new Vector3(Mathf.Clamp(pt.x, tower.transform.position.x - (tower.mapXSize/2), tower.transform.position.x + (tower.mapXSize/2)),
+						                                            tower.transform.position.y,
+						                                            Mathf.Clamp(pt.z, tower.transform.position.z - (tower.mapZSize/2), tower.transform.position.z + (tower.mapZSize/2)));
+					}
 				}
 			}
 		} else {

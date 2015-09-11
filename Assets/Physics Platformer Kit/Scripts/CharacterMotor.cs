@@ -10,9 +10,10 @@ public class CharacterMotor : MonoBehaviour
 	public Vector3 currentSpeed;
 	[HideInInspector]
 	public float DistanceToTarget;
-	
+
 	void Awake()
 	{
+
 		//set up rigidbody constraints
 		GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.Interpolate;
 		if(sidescroller)

@@ -12,6 +12,9 @@ TagManager:
   - MovingPlatform
   - Checkpoint
   - Waypoint
+  - Block
+  - Blob
+  - Shadow
   - FreezeOnTouch
   layers:
   - Default
@@ -22,8 +25,8 @@ TagManager:
   - UI
   - 
   - 
-  - Jenga
-  - 
+  - Blocks
+  - Player
   - 
   - 
   - 

@@ -57,13 +57,21 @@ public class TowerManager : MonoBehaviour {
 	public float getHeight()
 	{
 		float maxY = 0f;
+		bool any = false;
 
 		foreach(GameObject b in blocks)
 		{
+			any = true;
+
 			if (b.transform.position.y > maxY)
 			{
-				maxY = b.transform.position.y;
+				maxY = b.transform.position.y + 1.5f;
 			}
+		}
+
+		if (any == false)
+		{
+			return 0;
 		}
 
 		return maxY;
@@ -103,6 +111,18 @@ public class TowerManager : MonoBehaviour {
 		}
 	}
 
+
+	public void reset()
+	{
+		// Reset array
+		foreach(GameObject b in getBlocks ())
+		{
+			blocks.Remove (b);
+			Destroy (b);
+		}
+
+		blockArray = new bool[blockArraySizeX, blockArraySizeY, blockArraySizeZ];
+	}
 
 	// Attempts to remove a block
 	public bool removeBlock(GameObject o)

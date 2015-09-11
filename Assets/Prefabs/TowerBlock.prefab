@@ -12,9 +12,9 @@ GameObject:
   - 23: {fileID: 2333602}
   - 54: {fileID: 5425798}
   - 114: {fileID: 11486988}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: TowerBlock
-  m_TagString: FreezeOnTouch
+  m_TagString: Block
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -94,7 +94,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   re: {fileID: 0}
-  target: {x: 0, y: 0, z: 0}
+  resetColourTime: 5
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
@@ -132,12 +132,20 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_TagString
-      value: FreezeOnTouch
+      value: Block
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 6ca1ef632c9ea9647b7204435d2e0f1b, type: 2}
+    - target: {fileID: 0}
+      propertyPath: colourTime
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 107870}

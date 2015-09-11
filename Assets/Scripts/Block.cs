@@ -15,10 +15,13 @@ public class Block : MonoBehaviour {
 	// target positions
 	private Vector3 target = Vector3.zero;
 
-	public float colourTime = 5f;
+	public float resetColourTime = 5f;
+	private float colourTime;
 	private bool coloured = false;
 
 	private TowerManager tower;
+
+	private Vector3 shakePosition = new Vector3(0f, 0f, 0f);
 
 
 	private List<GameObject> shape = new List<GameObject>();
@@ -146,7 +149,7 @@ public class Block : MonoBehaviour {
 			tower.registerBlock(gameObject);
 			rb.WakeUp();
 			rb.isKinematic = false;
-
+			rb.detectCollisions = true;
 			setAlpha(1f);
 
 			// Restore position 
@@ -160,10 +163,8 @@ public class Block : MonoBehaviour {
 
 	public void activate()
 	{
-		rb.detectCollisions = true;
 		activated = true;
 		rb.isKinematic = true;
-	
 	}
 
 	// Looks up the block list to find the lowest position a block will fall to
@@ -199,10 +200,16 @@ public class Block : MonoBehaviour {
 	}
 
 	// Colourise on player touch
-	void OnCollisionEnter(Collision collision) {
+	void OnCollisionStay(Collision collision) {
 		// Collide if active/falling
-		if (rb.isKinematic == true && coloured == false)
+		if (rb.isKinematic == true) // && coloured == false) // DISABLED so timer resets constantly
 		{
+			// Turn black if touched by goo
+			if (collision.gameObject.tag == "Shadow")
+			{
+				re.material.color = new Color(0f, 0f, 0f);
+				coloured = false;
+			}
 			if (collision.gameObject.tag == "Player")
 			{
 				Rigidbody prb = collision.gameObject.GetComponent<Rigidbody>();
@@ -210,10 +217,12 @@ public class Block : MonoBehaviour {
 				// TODO: Use floorchecks/loop through children
 				//if (prb.velocity.y < 0)
 				//{
-					re.material.color = randomiseColor();
+					re.material.color = GameManager.instance.getBlobbi().GetComponent<BlobbiManager>().getColor ();
 					coloured = true;
+				colourTime = resetColourTime; // TODO: Standardise the goddamn spelling
 				//}
 			}
+
 		}
 	}
 
@@ -309,6 +318,14 @@ public class Block : MonoBehaviour {
 			{
 				colourTime -= Time.deltaTime;
 
+				if (colourTime < 1.5f)
+				{
+					shakePosition = new Vector3((float)Random.Range(-15 - (colourTime *10), 15 - (colourTime *10))/30,
+					                            (float)Random.Range(-15 - (colourTime *10), 15 - (colourTime *10))/30,
+					                            (float)Random.Range(-15 - (colourTime *10), 15 - (colourTime *10))/30);
+					transform.position = (target * snap) + shakePosition;
+				}
+
 				if (colourTime < 0)
 				{
 					tower.removeBlock(gameObject);
@@ -373,7 +390,7 @@ public class Block : MonoBehaviour {
 					transform.position = target * snap;
 					// Set velocity/angles/etc to zero just in case it got screwed at some point
 					rb.velocity = Vector3.zero;
-					transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z);
+					transform.eulerAngles = new Vector3(0f, transform.eulerAngles.y, 0f);
 
 					// The block is now stuck and jumpable
 					activate();
