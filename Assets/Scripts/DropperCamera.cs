@@ -197,8 +197,11 @@ public class DropperCamera : MonoBehaviour {
 				} else if (Input.GetMouseButtonUp(0))
 				{
 					// Wake up the block - time to drop
-					blockPlace.GetComponent<Block>().Drop();
-					
+					if (blockPlace)
+					{
+						blockPlace.GetComponent<Block>().Drop();
+					}
+
 					// Reset the timer so the player has to wait a bit before spawning another block
 					blockWaiting = blockWaitTime;
 					blockPlace = null;

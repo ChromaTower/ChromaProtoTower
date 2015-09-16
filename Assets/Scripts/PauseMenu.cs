@@ -49,21 +49,24 @@ public class PauseMenu : MonoBehaviour {
 				help = !help;
 				if (help){
 					Debug.Log("Working");
-					//GUI.Label(new Rect (200, 100, 150, 35), "Blobbi Moves");
-					//GUI.Label(new Rect (200, 150, 150, 35), "Forward:  W");
-					//GUI.Label(new Rect (200, 200, 150, 35), "Backward: S");
-					//GUI.Label(new Rect (200, 250, 150, 35), "Left:     A");
-					//GUI.Label(new Rect (200, 300, 150, 35), "Right:    D");
-					//GUI.Label(new Rect (200, 350, 150, 35), "Jump:     Spacebar");
-
-					//GUI.Label(new Rect (Screen.currentResolution.width - 200, 100, 150, 35), "Builders Moves");
-					//GUI.Label(new Rect (Screen.currentResolution.width - 200, 150, 150, 35), "Add Block:  		Hold Left Mouse");
-					//GUI.Label(new Rect (Screen.currentResolution.width - 200, 300, 150, 35), "Drop Block:			Realease Left Mouse");
-					//GUI.Label(new Rect (Screen.currentResolution.width - 200, 200, 150, 35), "Rotate Block:		Right Mouse");
-					//GUI.Label(new Rect (Screen.currentResolution.width - 200, 250, 150, 35), "Rotate Screen:  	Mouse Wheel");
-					//GUI.Label(new Rect (Screen.currentResolution.width - 200, 350, 150, 35), "Move Screen Up:     Move Mouse Up");
-					//GUI.Label(new Rect (Screen.currentResolution.width - 200, 350, 150, 35), "Move Screen Down:   Move Mouse Down");
 				}
+			}
+			if (help)
+			{
+				GUI.Label(new Rect (200, 100, 150, 35), "Blobbi Moves");
+				GUI.Label(new Rect (200, 150, 150, 35), "Forward:  W");
+				GUI.Label(new Rect (200, 200, 150, 35), "Backward: S");
+				GUI.Label(new Rect (200, 250, 150, 35), "Left:     A");
+				GUI.Label(new Rect (200, 300, 150, 35), "Right:    D");
+				GUI.Label(new Rect (200, 350, 150, 35), "Jump:     Spacebar");
+				
+				GUI.Label(new Rect (Screen.currentResolution.width - 200, 100, 150, 35), "Builders Moves");
+				GUI.Label(new Rect (Screen.currentResolution.width - 200, 150, 150, 35), "Add Block:  		Hold Left Mouse");
+				GUI.Label(new Rect (Screen.currentResolution.width - 200, 300, 150, 35), "Drop Block:			Realease Left Mouse");
+				GUI.Label(new Rect (Screen.currentResolution.width - 200, 200, 150, 35), "Rotate Block:		Right Mouse");
+				GUI.Label(new Rect (Screen.currentResolution.width - 200, 250, 150, 35), "Rotate Screen:  	Mouse Wheel");
+				GUI.Label(new Rect (Screen.currentResolution.width - 200, 350, 150, 35), "Move Screen Up:     Move Mouse Up");
+				GUI.Label(new Rect (Screen.currentResolution.width - 200, 350, 150, 35), "Move Screen Down:   Move Mouse Down");
 			}
 		}
 	}
