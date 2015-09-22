@@ -8,14 +8,18 @@ public class TowerManager : MonoBehaviour {
 	public GameObject block;
 	private List<GameObject> blocks = new List<GameObject>();	
 
+	public GameObject floor;
+
+	public GameObject wall;
+	private List<GameObject> walls = new List<GameObject>();	
+
 	// Effectively the block size, used in all block/position calculations
 	public float snap = 2;
 
 	// A 3D array containing positions (index) and if blocks are there
-	// TODO: Make these values dynamic with level size
-	public int mapXSize = 20;
-	public int mapYSize = 100;
-	public int mapZSize = 20;
+	public float mapXSize = 20;
+	public float mapYSize = 100;
+	public float mapZSize = 20;
 
 	public int blockArraySizeX;
 	public int blockArraySizeY;
@@ -40,12 +44,55 @@ public class TowerManager : MonoBehaviour {
 		blockArray = new bool[blockArraySizeX, blockArraySizeY, blockArraySizeZ];
 
 		minX = transform.position.x - (mapXSize/2);
-		minY = transform.position.y - (mapYSize/2);
+		minY = transform.position.y;
 		minZ = transform.position.z - (mapZSize/2);
 
 		maxX = transform.position.x + (mapXSize/2);
-		maxY = transform.position.y + (mapYSize/2);
+		maxY = transform.position.y + (mapYSize);
 		maxZ = transform.position.z + (mapZSize/2);
+
+		// Shift the floor if there is no clear "centre" as this means the blocks will be out of place
+		float centreShiftX, centreShiftZ;
+		if ((Mathf.FloorToInt(blockArraySizeX) % 2 == 0))
+		{
+			centreShiftX = snap / 2;
+		} else {
+			centreShiftX = 0;
+		}
+
+		if ((Mathf.FloorToInt(blockArraySizeZ) % 2 == 0))
+		{
+			centreShiftZ = snap / 2;
+		} else {
+			centreShiftZ = 0;
+		}
+
+
+
+		floor = (GameObject)Object.Instantiate(floor, transform.position - new Vector3(centreShiftX, snap/2, centreShiftZ), Quaternion.identity);
+		floor.transform.localScale = new Vector3(mapXSize / 10 , 1, mapZSize / 10);
+		floor.GetComponent<Renderer>().material.mainTextureScale = new Vector2(blockArraySizeX / 2, blockArraySizeZ / 2);
+
+		for (int i = 0; i <= 3; i++)
+		{
+			GameObject w = (GameObject)Object.Instantiate(wall, floor.transform.position + new Vector3(0, mapYSize / 2f, 0f), Quaternion.identity);
+			w.transform.Rotate(0f, i * 90f, 90f, Space.Self);
+			w.transform.localScale = new Vector3(maxY/10f, 1, mapXSize/10f);
+			if (i == 0)
+			{
+				w.transform.position += new Vector3(mapXSize / 2, 0f, 0f);
+			} else if (i == 1) {
+				w.transform.position += new Vector3(0f, 0f, -mapZSize / 2);
+			} else if (i == 2) {
+				w.transform.position += new Vector3(-mapXSize / 2, 0f, 0f);
+			} else {
+				w.transform.position += new Vector3(0f, 0f, mapZSize / 2);
+			}
+
+
+			walls.Add(w);
+		}
+
 	}
 
 	public float getSnap()
@@ -65,7 +112,7 @@ public class TowerManager : MonoBehaviour {
 
 			if (b.transform.position.y > maxY)
 			{
-				maxY = b.transform.position.y + 1.5f;
+				maxY = b.transform.position.y + snap;
 			}
 		}
 
@@ -90,7 +137,7 @@ public class TowerManager : MonoBehaviour {
 		{
 			Vector3 posDifference = new Vector3((int)((s.transform.position.x - o.transform.position.x) / snap), 
 			                                    (int)((s.transform.position.y - o.transform.position.y) / snap), 
-			                                    (int)((s.transform.position.z  - o.transform.position.z)/ snap));
+			                                    (int)((s.transform.position.z - o.transform.position.z) / snap));
 			deregisterPos(posDifference + o.GetComponent<Block>().getTarget());
 		}
 	}
@@ -117,8 +164,11 @@ public class TowerManager : MonoBehaviour {
 		// Reset array
 		foreach(GameObject b in getBlocks ())
 		{
-			blocks.Remove (b);
-			Destroy (b);
+			if (b.GetComponent<Block>().isActivated())
+			{
+				blocks.Remove (b);
+				Destroy (b);
+			}
 		}
 
 		blockArray = new bool[blockArraySizeX, blockArraySizeY, blockArraySizeZ];
@@ -242,6 +292,8 @@ public class TowerManager : MonoBehaviour {
 		transform.position = new Vector3(transform.position.x, getHeight() + 10f, transform.position.z);
 	}
 
+	// TODO: Get rid of this
+	// Why is this here lol silly nick
 	public Vector3 getPos()
 	{
 		return transform.position;

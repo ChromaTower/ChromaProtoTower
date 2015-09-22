@@ -53,6 +53,24 @@ public class DropperCamera : MonoBehaviour {
 
 		// Set the initial angle based on the camera's rotation
 		initAngle = transform.eulerAngles.y;
+
+		// Create a new block to start
+		blockPlace = tower.createBlock();
+
+
+		Camera camera = (Camera)GetComponent<Camera>();
+		camera.orthographicSize = Mathf.Max(tower.blockArraySizeX, tower.blockArraySizeZ) - 0.5f;
+
+		transform.position = new Vector3(tower.transform.position.x - (tower.mapXSize/2), -8, tower.transform.position.z - (tower.mapZSize/2));
+
+
+	}
+
+	public void reset()
+	{
+		camMouseY = 0f;
+		camX = 0f;
+		camZ = 0f;
 	}
 
 	public Vector3 getEulerAngles()
@@ -115,11 +133,11 @@ public class DropperCamera : MonoBehaviour {
 			// If the rotation timer has elapsed, snap to the angle (prevents overshooting)
 			if (rotWaiting > 0)
 			{
-				transform.RotateAround(tower.getPos(), Vector3.up, rotAngle * ((snapAngle / rotWaitTime) * Time.deltaTime));
+				transform.RotateAround(tower.floor.transform.position, Vector3.up, rotAngle * ((snapAngle / rotWaitTime) * Time.deltaTime));
 			} else {
 				// Round the angle
 				targetAngle = Mathf.Round((transform.eulerAngles.y - initAngle) / snapAngle) * snapAngle;
-				transform.RotateAround(tower.getPos(), Vector3.up, targetAngle - (transform.eulerAngles.y - initAngle));
+				transform.RotateAround(tower.floor.transform.position, Vector3.up, targetAngle - (transform.eulerAngles.y - initAngle));
 			}
 		}
 	}
@@ -137,7 +155,7 @@ public class DropperCamera : MonoBehaviour {
 				camMouseY += 0.05f * ((Input.mousePosition.y - (Screen.height - 100))/100) ;
 			} else if (Input.mousePosition.y < 100)
 			{
-				if (camMouseY > 0)
+				if (camMouseY > -5f)
 				{
 					camMouseY -= 0.05f * ((100 - Input.mousePosition.y)/100) ;
 				}
@@ -148,21 +166,16 @@ public class DropperCamera : MonoBehaviour {
 		if (blockWaiting <= 0f) {
 			if (GameManager.instance.controller)
 			{
-				if (GamePad.GetButtonDown (GamePad.Button.A, GamePad.Index.Two))
-				{
-					// Draw the block "preview" before the mouse is released
-					if (blockPlace == null)
-					{
-						blockPlace = tower.createBlock();
-					}
-				} else if (GamePad.GetButtonUp (GamePad.Button.A, GamePad.Index.Two))
+				if (GamePad.GetButtonUp (GamePad.Button.A, GamePad.Index.Two))
 				{
 					// Wake up the block - time to drop
 					blockPlace.GetComponent<Block>().Drop();
 
 					// Reset the timer so the player has to wait a bit before spawning another block
 					blockWaiting = blockWaitTime;
-					blockPlace = null;
+
+					// Create a new block
+					blockPlace = tower.createBlock();
 				}
 				
 				if (blockPlace)
@@ -172,29 +185,31 @@ public class DropperCamera : MonoBehaviour {
 						blockPlace.transform.RotateAround(blockPlace.transform.position, Vector3.up, snapAngle);
 					}
 
-					camX += GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.Two).x * Time.deltaTime * 15f;
-					camZ += GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.Two).y * Time.deltaTime * 15f;
+					Vector3 dropPos;
+					if (transform.eulerAngles.y >= 270)
+					{
+						camX -= GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.Two).y * Time.deltaTime * 15f;
+						camZ += GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.Two).x * Time.deltaTime * 15f;
+					} else if (transform.eulerAngles.y >= 180) {
+						camX -= GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.Two).x * Time.deltaTime * 15f;
+						camZ -= GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.Two).y * Time.deltaTime * 15f;
+					} else if (transform.eulerAngles.y >= 90) {
+						camX += GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.Two).y * Time.deltaTime * 15f;
+						camZ -= GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.Two).x * Time.deltaTime * 15f;
+					} else {
+						camX += GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.Two).x * Time.deltaTime * 15f;
+						camZ += GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.Two).y * Time.deltaTime * 15f;
+					}
 
 					TowerManager tower = GameManager.instance.getTower ();
-					camX = Mathf.Clamp (camX, tower.transform.position.x - tower.mapXSize, tower.transform.position.x + tower.mapXSize);
-					camZ = Mathf.Clamp (camZ, tower.transform.position.z - tower.mapZSize, tower.transform.position.z + tower.mapZSize);
-
-					blockPlace.transform.position = new Vector3(camX,
-					                                            tower.transform.position.y,
-					                                            camZ);
-
+					camX = Mathf.Clamp (camX, tower.transform.position.x - (tower.mapXSize / 2), tower.transform.position.x + (tower.mapXSize / 2));
+					camZ = Mathf.Clamp (camZ, tower.transform.position.z - (tower.mapZSize / 2), tower.transform.position.z + (tower.mapZSize / 2));
+					blockPlace.transform.position = new Vector3(camX, tower.transform.position.y, camZ);
 				}
 			}
 			else
 			{
-				if (Input.GetMouseButtonDown(0))
-				{
-					// Draw the block "preview" before the mouse is released
-					if (blockPlace == null)
-					{
-						blockPlace = tower.createBlock();
-					}
-				} else if (Input.GetMouseButtonUp(0))
+				if (Input.GetMouseButtonUp(0))
 				{
 					// Wake up the block - time to drop
 					if (blockPlace)
@@ -204,7 +219,7 @@ public class DropperCamera : MonoBehaviour {
 
 					// Reset the timer so the player has to wait a bit before spawning another block
 					blockWaiting = blockWaitTime;
-					blockPlace = null;
+					blockPlace = tower.createBlock();
 				}
 				
 				if (blockPlace)

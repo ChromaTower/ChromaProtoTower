@@ -11,6 +11,10 @@ public class CharacterMotor : MonoBehaviour
 	[HideInInspector]
 	public float DistanceToTarget;
 
+
+	// TODO: fix the error on line 85 instead of using this
+	Quaternion quat = Quaternion.LookRotation (Vector3.zero);
+
 	void Awake()
 	{
 
@@ -78,7 +82,8 @@ public class CharacterMotor : MonoBehaviour
 		}
 		
 		Vector3 newDir = lookDir - characterPos;
-		Quaternion dirQ = Quaternion.LookRotation (newDir);
+		Quaternion dirQ =  Quaternion.LookRotation (newDir);
+//		print(dirQ);
 		Quaternion slerp = Quaternion.Slerp (transform.rotation, dirQ, turnSpeed * Time.deltaTime);
 		GetComponent<Rigidbody>().MoveRotation (slerp);
 	}

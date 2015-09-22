@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour {
 
 	private TowerManager tower;
 	private DropperCamera camera;
+	private CameraFollow playerCamera;
 	private GameObject player;
 	private GameObject blobbi;
 	private GameObject shadow;
@@ -26,7 +27,9 @@ public class GameManager : MonoBehaviour {
 
 		DontDestroyOnLoad(gameObject);
 		tower = GameObject.Find("Tower").GetComponent<TowerManager>();
-		//camera = GameObject.Find("Camera").GetComponent<DropperCamera>();
+		// TODO: DON'T HARDCODE YOUR NAMES NICK YOU MORON
+		camera = GameObject.Find("IsoCamera").GetComponent<DropperCamera>();
+		playerCamera = GameObject.Find("Main Camera").GetComponent<CameraFollow>();
 		player = GameObject.Find("Player");
 		blobbi = GameObject.Find("Blobbi");
 		shadow = GameObject.Find("ShadowGoo");
@@ -51,9 +54,14 @@ public class GameManager : MonoBehaviour {
 	{
 		return tower;
 	}
-	public DropperCamera getCamera()
+	public DropperCamera getBuilderCamera()
 	{
 		return camera;
+	}
+
+	public CameraFollow getPlayerCamera()
+	{
+		return playerCamera;
 	}
 
 	public GameObject getShadow()
@@ -63,9 +71,10 @@ public class GameManager : MonoBehaviour {
 
 	void RestartLevel()
 	{
-		getPlayer ().GetComponent<PlayerMove>().reset();
 		getTower ().reset();
+		getPlayer ().GetComponent<PlayerMove>().reset();
 		getShadow().GetComponent<ShadowManager>().reset();
+		getBuilderCamera().reset();
 	}
 
 	// Update is called once per frame

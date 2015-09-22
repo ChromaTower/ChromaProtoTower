@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using GamepadInput;
 
 public class CameraFollow : MonoBehaviour 
 {
@@ -71,7 +72,20 @@ public class CameraFollow : MonoBehaviour
 		followTarget.position = target.position;
 		followTarget.Translate(targetOffset, Space.Self);
 		if (lockRotation)
-			followTarget.rotation = target.rotation;
+		{
+			if (GameManager.instance.controller)
+			{
+				float axisX = GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.One).x * inputRotationSpeed * Time.deltaTime;
+				followTarget.RotateAround (target.position,Vector3.up, axisX);
+				float axisY = GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.One).y * inputRotationSpeed * Time.deltaTime;
+				followTarget.RotateAround (target.position, transform.right, -axisY);
+			}
+			else
+			{
+				followTarget.rotation = target.rotation;
+			}
+
+		}
 		
 		if(mouseFreelook)
 		{
@@ -80,6 +94,13 @@ public class CameraFollow : MonoBehaviour
 			followTarget.RotateAround (target.position,Vector3.up, axisX);
 			float axisY = Input.GetAxis ("Mouse Y") * inputRotationSpeed * Time.deltaTime;
 			followTarget.RotateAround (target.position, transform.right, -axisY);
+
+			TowerManager tower = GameManager.instance.getTower ();
+
+			followTarget.position = new Vector3(Mathf.Clamp (followTarget.position.x, tower.minX, tower.maxX),
+			                                    Mathf.Clamp (followTarget.position.y, tower.minY, tower.maxY),
+			                                    Mathf.Clamp (followTarget.position.z, tower.minZ, tower.maxZ));
+			
 		}
 		else
 		{

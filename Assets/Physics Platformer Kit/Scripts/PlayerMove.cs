@@ -113,11 +113,13 @@ public class PlayerMove : MonoBehaviour
 	{	
 		//handle jumping
 		JumpCalculations ();
+		HomingChecker();
+
 		//adjust movement values if we're in the air or on the ground
 		curAccel = (grounded) ? accel : airAccel;
 		curDecel = (grounded) ? decel : airDecel;
 		curRotateSpeed = (grounded) ? rotateSpeed : airRotateSpeed;
-				
+
 		//get movement axis relative to camera
 		screenMovementSpace = Quaternion.Euler (0, mainCam.eulerAngles.y, 0);
 		screenMovementForward = screenMovementSpace * Vector3.forward;
@@ -129,26 +131,26 @@ public class PlayerMove : MonoBehaviour
 		{
 			h = GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.One).x;
 			v = GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.One).y;
+			float dist = Mathf.Sqrt((h * h) + (v * v));
+			float angle = Mathf.Atan2(v, h);
+
+			// Allow for smooth movement as well
+			curAccel *= dist;
+			curRotateSpeed *= dist;
+
+			turnDirection = transform.position + (GameManager.instance.getPlayerCamera ().transform.rotation * new Vector3(Mathf.Cos(angle) * dist, 0f, Mathf.Sin(angle) * dist));
+			walkDirection = transform.position + (GameManager.instance.getPlayerCamera ().transform.rotation * new Vector3(Mathf.Cos(angle) * dist, 0f, Mathf.Sin(angle) * dist));
+
 		} else {
 			h = Input.GetAxisRaw ("Horizontal");
 			v = Input.GetAxisRaw ("Vertical");
-		}
-		
-		//only apply vertical input to movemement, if player is not sidescroller
-		if(!sidescroller)
-		{
+
 			turnDirection = screenMovementRight * h;
 			walkDirection = screenMovementForward * v;
-		}
-		else
-		{
-			turnDirection = Vector3.right * h;
-			walkDirection = Vector3.right * h;
-		}
 
-		moveDirection = transform.position + turnDirection;
-
-		walkDirection = transform.position + walkDirection;
+			turnDirection += transform.position;
+			walkDirection += transform.position;
+		}
 	}
 	
 	//apply correct player movement (fixedUpdate for physics calculations)
@@ -157,9 +159,9 @@ public class PlayerMove : MonoBehaviour
 		//are we grounded
 		grounded = IsGrounded ();
 		//move, rotate, manage speed
-		characterMotor.MoveTo (walkDirection, curAccel, 0.7f, true);
+		characterMotor.MoveTo (walkDirection, curAccel, 0f, true); // 0f (third argument) is forward movement dead zone
 		if (rotateSpeed != 0 && turnDirection.magnitude != 0)
-			characterMotor.RotateToDirection (moveDirection , curRotateSpeed * 5, true);
+			characterMotor.RotateToDirection (turnDirection , curRotateSpeed * 5, true);
 
 		characterMotor.ManageSpeed (curDecel, maxSpeed + movingObjSpeed.magnitude, true);
 		//set animation values
@@ -298,5 +300,10 @@ public class PlayerMove : MonoBehaviour
 		GetComponent<Rigidbody>().velocity = new Vector3(GetComponent<Rigidbody>().velocity.x, 0f, GetComponent<Rigidbody>().velocity.z);
 		GetComponent<Rigidbody>().AddRelativeForce (jumpVelocity, ForceMode.Impulse);
 		airPressTime = 0f;
+	}
+
+	public void HomingChecker()
+	{
+		// TODO: Press B button to home in on nearest block
 	}
 }
