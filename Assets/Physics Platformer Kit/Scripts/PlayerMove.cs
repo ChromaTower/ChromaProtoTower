@@ -17,6 +17,7 @@ public class PlayerMove : MonoBehaviour
 	public Animator animator;					//object with animation controller on, which you want to animate
 	public AudioClip jumpSound;					//play when jumping
 	public AudioClip landSound;					//play when landing on ground
+	public AudioClip moveSound;
 	
 	//movement
 	public float accel = 70f;					//acceleration/deceleration in air or on the ground
@@ -159,11 +160,19 @@ public class PlayerMove : MonoBehaviour
 		//are we grounded
 		grounded = IsGrounded ();
 		//move, rotate, manage speed
+<<<<<<< HEAD
 		characterMotor.MoveTo (walkDirection, curAccel, 0f, true); // 0f (third argument) is forward movement dead zone
 		if (rotateSpeed != 0 && turnDirection.magnitude != 0)
 			characterMotor.RotateToDirection (turnDirection , curRotateSpeed * 5, true);
+=======
+		characterMotor.MoveTo (walkDirection, curAccel, 0.7f, true);
+		if (rotateSpeed != 0 && turnDirection.magnitude != 0) 
+			characterMotor.RotateToDirection (moveDirection, curRotateSpeed * 5, true);
 
-		characterMotor.ManageSpeed (curDecel, maxSpeed + movingObjSpeed.magnitude, true);
+	
+			characterMotor.ManageSpeed (curDecel, maxSpeed + movingObjSpeed.magnitude, true);
+>>>>>>> 311b226b59aad52f94d7d949dbff653d54c03405
+
 		//set animation values
 		if(animator)
 		{
@@ -171,6 +180,21 @@ public class PlayerMove : MonoBehaviour
 			animator.SetBool("Grounded", grounded);
 			animator.SetFloat("YVelocity", GetComponent<Rigidbody>().velocity.y);
 		}
+		//
+		if(moveSound && grounded && Input.GetKeyDown(KeyCode.W) ||Input.GetKeyDown(KeyCode.S)){
+
+			GetComponent<AudioSource>().volume = 1;
+			GetComponent<AudioSource>().clip = moveSound;
+			GetComponent<AudioSource>().Play ();
+			/*
+			if(curAccel == 0){
+				GetComponent<AudioSource>().volume = 1;
+				GetComponent<AudioSource>().clip = moveSound;
+				GetComponent<AudioSource>().Stop ();
+			}
+			*/
+		}
+		
 	}
 	
 	//prevents rigidbody from sliding down slight slopes (read notes in characterMotor class for more info on friction)
@@ -251,7 +275,7 @@ public class PlayerMove : MonoBehaviour
 		//play landing sound
 		if(groundedCount < 0.25 && groundedCount != 0 && !GetComponent<AudioSource>().isPlaying && landSound && GetComponent<Rigidbody>().velocity.y < 1)
 		{
-			GetComponent<AudioSource>().volume = Mathf.Abs(GetComponent<Rigidbody>().velocity.y)/40;
+			GetComponent<AudioSource>().volume = 40;
 			GetComponent<AudioSource>().clip = landSound;
 			GetComponent<AudioSource>().Play ();
 		}
