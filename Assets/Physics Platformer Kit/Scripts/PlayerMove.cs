@@ -160,18 +160,12 @@ public class PlayerMove : MonoBehaviour
 		//are we grounded
 		grounded = IsGrounded ();
 		//move, rotate, manage speed
-<<<<<<< HEAD
 		characterMotor.MoveTo (walkDirection, curAccel, 0f, true); // 0f (third argument) is forward movement dead zone
 		if (rotateSpeed != 0 && turnDirection.magnitude != 0)
 			characterMotor.RotateToDirection (turnDirection , curRotateSpeed * 5, true);
-=======
-		characterMotor.MoveTo (walkDirection, curAccel, 0.7f, true);
-		if (rotateSpeed != 0 && turnDirection.magnitude != 0) 
-			characterMotor.RotateToDirection (moveDirection, curRotateSpeed * 5, true);
 
 	
 			characterMotor.ManageSpeed (curDecel, maxSpeed + movingObjSpeed.magnitude, true);
->>>>>>> 311b226b59aad52f94d7d949dbff653d54c03405
 
 		//set animation values
 		if(animator)
