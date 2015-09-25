@@ -180,13 +180,14 @@ public class PlayerMove : MonoBehaviour
 			GetComponent<AudioSource>().volume = 1;
 			GetComponent<AudioSource>().clip = moveSound;
 			GetComponent<AudioSource>().Play ();
-			/*
-			if(curAccel == 0){
+
+			/*if(curAccel == 0){
 				GetComponent<AudioSource>().volume = 1;
 				GetComponent<AudioSource>().clip = moveSound;
 				GetComponent<AudioSource>().Stop ();
 			}
 			*/
+
 		}
 		
 	}
@@ -269,7 +270,7 @@ public class PlayerMove : MonoBehaviour
 		//play landing sound
 		if(groundedCount < 0.25 && groundedCount != 0 && !GetComponent<AudioSource>().isPlaying && landSound && GetComponent<Rigidbody>().velocity.y < 1)
 		{
-			GetComponent<AudioSource>().volume = 40;
+			GetComponent<AudioSource>().volume = 1;
 			GetComponent<AudioSource>().clip = landSound;
 			GetComponent<AudioSource>().Play ();
 		}

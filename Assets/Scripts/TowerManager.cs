@@ -36,6 +36,7 @@ public class TowerManager : MonoBehaviour {
 
 
 
+
 	// Use this for initialization
 	void Start () {
 		blockArraySizeX = (int)(mapXSize / snap);
