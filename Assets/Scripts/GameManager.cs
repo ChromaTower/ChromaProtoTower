@@ -15,17 +15,7 @@ public class GameManager : MonoBehaviour {
 	// Are we using a controller or KB/mouse?
 	public bool controller = false;
 
-	// Use this for initialization
-	void Awake () {
-		// Singleton stuff - there can only be one
-		if (instance == null)
-		{
-			instance = this;
-		} else if (instance != this) {
-			Destroy(gameObject);    
-		}
-
-		DontDestroyOnLoad(gameObject);
+	void OnLevelWasLoaded(int level) {
 		tower = GameObject.Find("Tower").GetComponent<TowerManager>();
 		// TODO: DON'T HARDCODE YOUR NAMES NICK YOU MORON
 		camera = GameObject.Find("IsoCamera").GetComponent<DropperCamera>();
@@ -38,6 +28,21 @@ public class GameManager : MonoBehaviour {
 		Physics.IgnoreLayerCollision(0, 8);
 		// Also blocks and other blocks
 		Physics.IgnoreLayerCollision(8, 8);
+		
+	} 
+
+	// Use this for initialization
+	void Awake () {
+		OnLevelWasLoaded (0);
+		// Singleton stuff - there can only be one
+		if (instance == null)
+		{
+			instance = this;
+		} else if (instance != this) {
+			Destroy(instance);    
+		}
+		
+		DontDestroyOnLoad(instance);
 	}
 
 	public GameObject getPlayer()
@@ -71,10 +76,11 @@ public class GameManager : MonoBehaviour {
 
 	void RestartLevel()
 	{
-		getTower ().reset();
-		getPlayer ().GetComponent<PlayerMove>().reset();
-		getShadow().GetComponent<ShadowManager>().reset();
-		getBuilderCamera().reset();
+		//getTower ().reset();
+		//getPlayer ().GetComponent<PlayerMove>().reset();
+		//getShadow().GetComponent<ShadowManager>().reset();
+		//getBuilderCamera().reset();
+		Application.LoadLevel (Application.loadedLevelName);
 	}
 
 	// Update is called once per frame
