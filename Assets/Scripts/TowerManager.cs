@@ -9,6 +9,7 @@ public class TowerManager : MonoBehaviour {
 	private List<GameObject> blocks = new List<GameObject>();	
 
 	public GameObject floor;
+	public GameObject previewGrid;
 
 	public GameObject wall;
 	private List<GameObject> walls = new List<GameObject>();	
@@ -34,7 +35,8 @@ public class TowerManager : MonoBehaviour {
 	public float maxY = 0;
 	public float maxZ = 0;
 
-
+	// How tall the tower is
+	private float height = 0;
 
 	// Use this for initialization
 	void Start () {
@@ -73,7 +75,13 @@ public class TowerManager : MonoBehaviour {
 		floor.transform.localScale = new Vector3(mapXSize / 10 , 1, mapZSize / 10);
 		floor.GetComponent<Renderer>().material.mainTextureScale = new Vector2(blockArraySizeX / 2, blockArraySizeZ / 2);
 
-		for (int i = 0; i <= 3; i++)
+		previewGrid = (GameObject)Object.Instantiate(previewGrid, transform.position - new Vector3(centreShiftX, snap/2, centreShiftZ), Quaternion.identity);
+		previewGrid.transform.localScale = new Vector3(mapXSize / 10 , 1, mapZSize / 10);
+		previewGrid.GetComponent<Renderer>().material.mainTextureScale = new Vector2(blockArraySizeX / 2, blockArraySizeZ / 2);
+
+
+
+		/*for (int i = 0; i <= 3; i++)
 		{
 			GameObject w = (GameObject)Object.Instantiate(wall, floor.transform.position + new Vector3(0, mapYSize / 2f, 0f), Quaternion.identity);
 			w.transform.Rotate(0f, i * 90f, 90f, Space.Self);
@@ -91,7 +99,7 @@ public class TowerManager : MonoBehaviour {
 
 
 			walls.Add(w);
-		}
+		}*/
 
 	}
 
@@ -103,25 +111,34 @@ public class TowerManager : MonoBehaviour {
 	// Returns the highest block's y-coordinate
 	public float getHeight()
 	{
+		return height;
+	}
+
+	// Recalculates the height of the tower
+	public void recalculateHeight()
+	{
 		float maxY = 0f;
 		bool any = false;
 
 		foreach(GameObject b in blocks)
 		{
-			any = true;
-
-			if (b.transform.position.y > maxY)
+			foreach(GameObject s in b.GetComponent<Block>().getShape())
 			{
-				maxY = b.transform.position.y + snap;
+				any = true;
+
+				if (s.transform.position.y + snap > maxY)
+				{
+					maxY = s.transform.position.y + snap;
+				}
 			}
 		}
 
 		if (any == false)
 		{
-			return 0;
+			height = 0;
 		}
 
-		return maxY;
+		height = maxY;
 	}
 
 	// Returns the list of blocks
@@ -141,11 +158,7 @@ public class TowerManager : MonoBehaviour {
 			deregisterPos(posDifference + o.GetComponent<Block>().getTarget());
 		}
 	}
-
-	private void checkIntegrity()
-	{
-		// TODO: this
-	}
+	
 
 	public void registerBlock(GameObject o)
 	{
@@ -273,7 +286,6 @@ public class TowerManager : MonoBehaviour {
 		if (checkBounds(x, y, z))
 		{
 			blockArray[x, y, z] = false;
-			checkIntegrity ();
 		}
 	}
 
@@ -290,12 +302,7 @@ public class TowerManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		transform.position = new Vector3(transform.position.x, getHeight() + 10f, transform.position.z);
-	}
 
-	// TODO: Get rid of this
-	// Why is this here lol silly nick
-	public Vector3 getPos()
-	{
-		return transform.position;
+		//previewGrid.transform.position = new Vector3(previewGrid.transform.position.x, Mathf.Round(getHeight() / snap) - (snap / 2), previewGrid.transform.position.z);
 	}
 }

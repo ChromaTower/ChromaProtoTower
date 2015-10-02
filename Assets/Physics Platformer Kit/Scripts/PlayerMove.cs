@@ -8,7 +8,6 @@ using GamepadInput;
 [RequireComponent(typeof(AudioSource))]
 public class PlayerMove : MonoBehaviour 
 {
-	private float xGPPrev = 0;
 	public bool alive = true;
 
 	//setup

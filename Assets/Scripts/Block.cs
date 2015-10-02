@@ -12,6 +12,7 @@ public class Block : MonoBehaviour {
 	public bool snapping = true;
 
 	private bool falling = false;
+	private bool previewed = false;
 	private bool activated = false;
 
 	// target positions
@@ -49,6 +50,7 @@ public class Block : MonoBehaviour {
 			cube.transform.localScale = new Vector3(snap, snap, snap);
 			cube.transform.position = transform.position;
 			cube.GetComponent<Renderer>().material = mat;
+			cube.layer = 10;
 			//cube.AddComponent<Rigidbody>();
 			result.Add(cube);
 		}
@@ -86,7 +88,34 @@ public class Block : MonoBehaviour {
 			shape[2].transform.position = shape[0].transform.position + (snap * new Vector3( 1f, 1f, 0f));
 			shape[3].transform.position = shape[0].transform.position + (snap * new Vector3( 2f, 1f, 0f));
 		}
+
+
 	
+	}
+
+	// Used as an alternate test
+	void blockAltSetup()
+	{
+		/*int selection = Random.Range (0, 2);
+		if (selection == 0)
+		{
+			shape[1].transform.position = shape[0].transform.position + (snap * new Vector3( 1f, 0f, 0f));
+			shape[2].transform.position = shape[0].transform.position + (snap * new Vector3( 0f, 0f, 1f));
+			shape[3].transform.position = shape[0].transform.position + (snap * new Vector3( 1f, 0f, 1f));
+		}
+		else if (selection == 1)
+		{
+		}*/
+	}
+
+	void randomiseRotation()
+	{
+		/*int up = (int)Random.Range(0, 3);
+		int right = (int)Random.Range(0, 3);
+		int forward = (int)Random.Range(0, 3);
+		transform.RotateAround(transform.position, Vector3.up, 90 * up);
+		transform.RotateAround(transform.position, Vector3.right, 90 * right);
+		transform.RotateAround(transform.position, Vector3.forward, 90 * forward);*/
 	}
 
 	// Use this for initialization
@@ -99,6 +128,7 @@ public class Block : MonoBehaviour {
 
 		shape = createShape();
 		tetrominoSetup();
+		randomiseRotation();
 
 		rb = GetComponent<Rigidbody>();
 
@@ -160,23 +190,26 @@ public class Block : MonoBehaviour {
 			rb.detectCollisions = true;
 			setAlpha(1f);
 			rb.WakeUp();
-
-			//transform.position = target * snap;
 			activate();
 			tower.registerBlock(gameObject);
+			tower.recalculateHeight();
 
-			/*
-			rb.isKinematic = false;
-
-			// Restore position 
-			transform.position = new Vector3(transform.position.x, tower.getPos().y, transform.position.z);
-			falling = true;*/
+			foreach(GameObject o in shape)
+			{
+				o.layer = 0;
+			}
 		} else {
 			tower.removeBlock (gameObject);
 		}
 
 	}
 
+	public void preview()
+	{
+		previewed = true;
+	}
+
+	// The block is ready for use
 	public void activate()
 	{
 		activated = true;
@@ -217,19 +250,12 @@ public class Block : MonoBehaviour {
 			}
 			if (collision.gameObject.tag == "Player")
 			{
-				Rigidbody prb = collision.gameObject.GetComponent<Rigidbody>();
-
-				// TODO: Use floorchecks/loop through children
-				//if (prb.velocity.y < 0)
-				//{
-					
-					foreach(GameObject o in shape)
-					{
-						o.GetComponent<Renderer>().material.color = GameManager.instance.getBlobbi().GetComponent<BlobbiManager>().getColor ();
-					}
-					coloured = true;
-				colourTime = resetColourTime; // TODO: Standardise the goddamn spelling
-				//}
+				foreach(GameObject o in shape)
+				{
+					o.GetComponent<Renderer>().material.color = GameManager.instance.getBlobbi().GetComponent<BlobbiManager>().getColor ();
+				}
+				coloured = true;
+				colourTime = resetColourTime;
 			}
 
 		}
@@ -285,76 +311,89 @@ public class Block : MonoBehaviour {
 		}
 	}
 
-	// Update is called once per frame
-	void Update () {
-		// Interactions when the block is placed down
-		if (activated == true)
+	// Handles the previewing block
+	void PreviewUpdate()
+	{
+		if (falling == false)
 		{
-			if (coloured == true)
+
+			List<float> yChange = new List<float>();
+			foreach(GameObject o in shape)
 			{
-				colourTime -= Time.deltaTime;
-
-				if (colourTime < 1.5f)
+				int xSnap = (int)Mathf.Round((o.transform.position.x - tower.minX) / snap);
+				int ySnap = (int)Mathf.Round((o.transform.position.y - tower.minY) / snap);
+				int zSnap = (int)Mathf.Round((o.transform.position.z - tower.minZ) / snap);
+				
+				
+				yChange.Add(checkYPosition(new Vector3(xSnap, Mathf.Round((tower.maxY - tower.transform.position.y)/snap), zSnap))); // check from top of level
+			}
+			
+			
+			// We are finding the lowest point the block can logically fall to
+			float maxFall = 0;
+			foreach (float f in yChange)
+			{
+				if (f > maxFall)
 				{
-					shakePosition = new Vector3((float)Random.Range(-1.5f + (colourTime), 1.5f - (colourTime))/30,
-					                            (float)Random.Range(-1.5f + (colourTime), 1.5f - (colourTime))/30,
-					                            (float)Random.Range(-1.5f + (colourTime), 1.5f - (colourTime))/30);
-					transform.position += shakePosition;
+					maxFall = f;
 				}
+			}
+			
+			// Set the target accordingly
+			target = new Vector3(Mathf.Round((transform.position.x - tower.minX) / (float)snap),
+			                     maxFall,
+			                     Mathf.Round((transform.position.z - tower.minZ) / (float)snap));
+			
+			transform.position = new Vector3(transform.position.x, maxFall * snap, transform.position.z);
+			//tower.previewGrid.transform.position = new Vector3(tower.previewGrid.transform.position.x, transform.position.y - (snap / 2), tower.previewGrid.transform.position.z);
+		}
+	}
 
-				if (colourTime < 0)
+	// Handles the block updating when the block has been activate
+	void ActiveUpdate()
+	{
+		if (coloured == true)
+		{
+			// Decrease the timer if the block has been colorised
+			colourTime -= Time.deltaTime;
+
+			// Start shaking when near death
+			if (colourTime < 1.5f)
+			{
+				shakePosition = new Vector3((float)Random.Range(-1.5f + (colourTime), 1.5f - (colourTime))/30,
+				                            (float)Random.Range(-1.5f + (colourTime), 1.5f - (colourTime))/30,
+				                            (float)Random.Range(-1.5f + (colourTime), 1.5f - (colourTime))/30);
+				transform.position += shakePosition;
+
+				// Delete when time expired
+				if (colourTime <= 0)
 				{
 					tower.removeBlock(gameObject);
 				}
 			}
 		}
+	}
+
+	// Update is called once per frame
+	void Update () {
+		// Interactions when the block is placed down
+		if (activated)
+		{
+			ActiveUpdate();
+		}
 		else if (activated == false) // Before the block is falling
 		{
-			// All the blocks should follow a consistent position
-			int blockNum = 0;
+			// Snap position
+			transform.position = new Vector3(Mathf.Round(transform.position.x / (float)snap) * snap,
+			                                 Mathf.Round(transform.position.y / (float)snap) * snap,
+			                                 Mathf.Round(transform.position.z / (float)snap) * snap);
+			
+			// Move the block inside the boundaries
+			checkBlockBounds();
 
-			if (falling == false)
+			if (previewed)
 			{
-
-
-				List<float> yChange = new List<float>();
-				// Check all the blocks in the shape to see how it should fall
-				blockNum = 0;
-
-				transform.position = new Vector3(Mathf.Round(transform.position.x / (float)snap) * snap,
-				                                 Mathf.Round(tower.transform.position.y/ (float)snap) * snap,
-				                                 Mathf.Round(transform.position.z / (float)snap) * snap);
-
-				// Move the block inside the boundaries
-				checkBlockBounds();
-				
-				foreach(GameObject o in shape)
-				{
-					int xSnap = (int)Mathf.Round((o.transform.position.x - tower.minX) / snap);
-					int ySnap = (int)Mathf.Round((o.transform.position.y - tower.minY) / snap);
-					int zSnap = (int)Mathf.Round((o.transform.position.z - tower.minZ) / snap);
-
-
-					yChange.Add(checkYPosition(new Vector3(xSnap, Mathf.Round((tower.maxY - tower.transform.position.y)/snap), zSnap))); // check from top of level
-				}
-
-
-				// We are finding the lowest point the block can logically fall to
-				float maxFall = 0;
-				foreach (float f in yChange)
-				{
-					if (f > maxFall)
-					{
-						maxFall = f;
-					}
-				}
-
-				// Set the target accordingly
-				target = new Vector3(Mathf.Round((transform.position.x - tower.minX) / (float)snap),
-				                                 maxFall,
-				                     Mathf.Round((transform.position.z - tower.minZ) / (float)snap));
-	
-				transform.position = new Vector3(transform.position.x, maxFall * snap, transform.position.z);
+				PreviewUpdate();
 			}
 		}
 	}

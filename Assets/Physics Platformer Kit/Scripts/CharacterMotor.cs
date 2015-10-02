@@ -10,10 +10,7 @@ public class CharacterMotor : MonoBehaviour
 	public Vector3 currentSpeed;
 	[HideInInspector]
 	public float DistanceToTarget;
-
-
-	// TODO: fix the error on line 85 instead of using this
-	Quaternion quat = Quaternion.LookRotation (Vector3.zero);
+	
 
 	void Awake()
 	{

@@ -8,11 +8,11 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 416074}
-  - 65: {fileID: 6542302}
-  - 23: {fileID: 2333602}
   - 54: {fileID: 5425798}
   - 114: {fileID: 11486988}
-  m_Layer: 8
+  - 23: {fileID: 2320618}
+  - 65: {fileID: 6518968}
+  m_Layer: 10
   m_Name: TowerBlock
   m_TagString: Block
   m_Icon: {fileID: 0}
@@ -31,7 +31,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
---- !u!23 &2333602
+--- !u!23 &2320618
 MeshRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -41,14 +41,14 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_Materials:
-  - {fileID: 2100000, guid: 6ca1ef632c9ea9647b7204435d2e0f1b, type: 2}
+  - {fileID: 0}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_UseLightProbes: 1
   m_ReflectionProbeUsage: 1
   m_ProbeAnchor: {fileID: 0}
   m_ScaleInLightmap: 1
-  m_PreserveUVs: 1
+  m_PreserveUVs: 0
   m_ImportantGI: 0
   m_AutoUVMaxDistance: .5
   m_AutoUVMaxAngle: 89
@@ -70,7 +70,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &6542302
+--- !u!65 &6518968
 BoxCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -95,7 +95,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   re: {fileID: 0}
   mat: {fileID: 2100000, guid: c5bee89cc40002d499f28a3bf89ca0fe, type: 2}
-  resetColourTime: 5
+  snapping: 1
+  resetColourTime: 9999
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
@@ -145,7 +146,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Layer
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Enabled
@@ -155,6 +156,10 @@ Prefab:
       propertyPath: mat
       value: 
       objectReference: {fileID: 2100000, guid: c5bee89cc40002d499f28a3bf89ca0fe, type: 2}
+    - target: {fileID: 0}
+      propertyPath: resetColourTime
+      value: 9999
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 107870}

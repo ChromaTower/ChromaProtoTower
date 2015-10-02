@@ -20,7 +20,7 @@ public class UIManager : MonoBehaviour {
 		height.text = (pos / 2) + "m";	
 
 		//TODO: Kill magic values
-		float pos2 = Mathf.Round(((GameManager.instance.getShadow().transform.position.y + GameManager.instance.getShadow().transform.localScale.y - 3.6f))* 5)/5;
+		float pos2 = Mathf.Round(((GameManager.instance.getShadow().transform.position.y + (GameManager.instance.getShadow().transform.localScale.y / 2) + 0.7f))* 5)/5;
 		shadowheight.text = (pos2 / 2) + "m";
 
 		if (GameManager.instance.getPlayer().GetComponent<PlayerMove>().alive == false)

@@ -113,6 +113,7 @@ public class BlobbiManager : MonoBehaviour {
 		if (col == false)
 		{
 			m_JellyMesh.ignoreCollision(transform.parent.GetComponent<Rigidbody>().GetComponent<Collider>(), true);
+			m_JellyMesh.ignoreCollision(GameManager.instance.getPlayer().GetComponent<Rigidbody>().GetComponent<Collider>(), true);
 			col = true;
 		}
 		m_JellyMesh.SetPosition(transform.parent.position, false);
