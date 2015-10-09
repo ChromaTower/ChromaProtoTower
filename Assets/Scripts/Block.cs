@@ -7,7 +7,8 @@ public class Block : MonoBehaviour {
 	private Rigidbody rb;
 	public Renderer re;
 	public Material mat;
-	public AudioClip blockland;
+	public AudioClip blockLand;
+	public AudioClip blockTouch;
 
 	private float snap;
 	public bool snapping = true;
@@ -186,7 +187,7 @@ public class Block : MonoBehaviour {
 		rb.isKinematic = true;
 
 		GetComponent<AudioSource> ().volume = 0.4f;
-		GetComponent<AudioSource> ().clip = blockland;
+		GetComponent<AudioSource> ().clip = blockLand;
 		GetComponent<AudioSource> ().Play ();
 	}
 
@@ -229,7 +230,11 @@ public class Block : MonoBehaviour {
 				// TODO: Use floorchecks/loop through children
 				//if (prb.velocity.y < 0)
 				//{
-					
+				/*
+				GetComponent<AudioSource>().volume = 1;
+				GetComponent<AudioSource>().clip = blockTouch;
+				GetComponent<AudioSource>().Play ();
+					*/
 					foreach(GameObject o in shape)
 					{
 						o.GetComponent<Renderer>().material.color = GameManager.instance.getBlobbi().GetComponent<BlobbiManager>().getColor ();
