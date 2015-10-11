@@ -1,20 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 
 public class GameManager : MonoBehaviour {
 	public static GameManager instance = null;
-
+	
 	private TowerManager tower;
 	private DropperCamera camera;
 	private CameraFollow playerCamera;
 	private GameObject player;
 	private GameObject blobbi;
 	private GameObject shadow;
-
+	private List<string> scores;
+	private string file;
+	
+	
 	// Are we using a controller or KB/mouse?
 	public bool controller = false;
-
+	
 	void OnLevelWasLoaded(int level) {
 		tower = GameObject.Find("Tower").GetComponent<TowerManager>();
 		// TODO: DON'T HARDCODE YOUR NAMES NICK YOU MORON
@@ -28,12 +32,15 @@ public class GameManager : MonoBehaviour {
 		Physics.IgnoreLayerCollision(0, 8);
 		// Also blocks and other blocks
 		Physics.IgnoreLayerCollision(8, 8);
+		scores = new List<string>();
+		file = "C:/Users/Public/Documents/ChromaTower/HighScores.txt";
+		ReadScores ();
+		
 		
 	} 
-
+	
 	// Use this for initialization
 	void Awake () {
-		OnLevelWasLoaded (0);
 		// Singleton stuff - there can only be one
 		if (instance == null)
 		{
@@ -42,19 +49,25 @@ public class GameManager : MonoBehaviour {
 			Destroy(instance);    
 		}
 		
-		DontDestroyOnLoad(instance);
+		//DontDestroyOnLoad(instance);
+		OnLevelWasLoaded (1);
+		Debug.Log (float.Parse(scores[0]));
+		Debug.Log (float.Parse(scores[1]));
+		Debug.Log (float.Parse(scores[2]));
+		Debug.Log (float.Parse(scores[3]));
+		Debug.Log (float.Parse(scores[4]));
 	}
-
+	
 	public GameObject getPlayer()
 	{
 		return player;
 	}
-
+	
 	public GameObject getBlobbi()
 	{
 		return blobbi;
 	}
-
+	
 	public TowerManager getTower()
 	{
 		return tower;
@@ -63,32 +76,92 @@ public class GameManager : MonoBehaviour {
 	{
 		return camera;
 	}
-
+	
 	public CameraFollow getPlayerCamera()
 	{
 		return playerCamera;
 	}
-
+	
 	public GameObject getShadow()
 	{
 		return shadow;
 	}
-
+	
 	void RestartLevel()
-	{
-		//getTower ().reset();
-		//getPlayer ().GetComponent<PlayerMove>().reset();
-		//getShadow().GetComponent<ShadowManager>().reset();
-		//getBuilderCamera().reset();
+	{	
+		string line = (((getPlayer().transform.position.y + 0.7f) * 5/5)/ 2).ToString ("0.0");
+		CheckScores (float.Parse(line));
+		SaveHighScore ();
 		Application.LoadLevel (Application.loadedLevelName);
 	}
-
+	
 	// Update is called once per frame
 	void Update () {
-	
+		
+		
 		if (Input.GetKey (KeyCode.Return))
 		{
 			RestartLevel();
+		}
+	}
+	
+	/// <summary>
+	/// Reads the scores from a text file.
+	/// </summary>
+	public void ReadScores(){
+		using(StreamReader sr = new StreamReader(file))
+		{
+			string line;
+			
+			// checks to see if you have reached the end of the file
+			while (!sr.EndOfStream)
+			{
+				line = sr.ReadLine();
+				scores.Add(line);
+			}
+		}
+	}
+	
+	
+	/// <summary>
+	/// Checks the scores. This goes through the loop and checks to see
+	/// if you score has beaten any of the other scores.
+	/// </summary>
+	/// <param name="scoreCheck">Score check.</param>
+	public void CheckScores(float scoreCheck){
+		if(scoreCheck > float.Parse(scores[0])){
+			scores[4] = scores[3];
+			scores[3] = scores[2];
+			scores[2] = scores[1];
+			scores[1] = scores[0];
+			scores[0] = scoreCheck.ToString();
+		}else if(scoreCheck > float.Parse(scores[1])){
+			scores[4] = scores[3];
+			scores[3] = scores[2];
+			scores[2] = scores[2];
+			scores[1] = scoreCheck.ToString();
+		}else if(scoreCheck > float.Parse(scores[2])){
+			scores[4] = scores[3];
+			scores[3] = scores[2];
+			scores[2] = scoreCheck.ToString();
+		}else if(scoreCheck > float.Parse(scores[3])){
+			scores[4] = scores[3];
+			scores[3] = scoreCheck.ToString();
+		}else if(scoreCheck > float.Parse(scores[4])){
+			scores[4] =  scoreCheck.ToString();
+		} else {
+			Debug.Log("These aren't the scores you are looking for!");
+		}
+	}
+	
+	
+	public void SaveHighScore(){
+		using(StreamWriter sw = new StreamWriter(file))
+		{
+			foreach (string line in scores)
+			{
+				sw.WriteLine(line);
+			}
 		}
 	}
 }
