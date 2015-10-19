@@ -6,7 +6,12 @@ public class UIManager : MonoBehaviour {
 
 	public Text height;
 	public Text shadowheight;
+	public Text heightTower;
+	public Text blocksLeft;
+
 	public Text reset;
+
+
 
 	// Use this for initialization
 	void Start () {
@@ -15,9 +20,10 @@ public class UIManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		//TODO: check if still exists
+		//TODO: check if the player still exists
 		float pos = Mathf.Round (((GameManager.instance.getPlayer().transform.position.y + 0.7f) )* 5)/5;
 		height.text = (pos / 2) + "m";	
+		heightTower.text = height.text;
 
 		//TODO: Kill magic values
 		float pos2 = Mathf.Round(((GameManager.instance.getShadow().transform.position.y + (GameManager.instance.getShadow().transform.localScale.y / 2) + 0.7f))* 5)/5;
@@ -30,5 +36,7 @@ public class UIManager : MonoBehaviour {
 		{
 			reset.color = new Color(1f, 1f, 1f, 0f);
 		}
+
+		blocksLeft.text = (GameManager.instance.getTower ().blockEnergy) + " available";	
 	}
 }

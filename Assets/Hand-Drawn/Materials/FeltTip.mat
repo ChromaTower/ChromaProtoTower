@@ -19,7 +19,7 @@ Material:
         first:
           name: _MainTex
         second:
-          m_Texture: {fileID: 2800000, guid: c0bc6ddcbdd31e04d9029ee4002a1637, type: 3}
+          m_Texture: {fileID: 2800000, guid: 5ddc855ea8b830f44b0f59faf0ff875a, type: 3}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
@@ -31,14 +31,14 @@ Material:
           m_Offset: {x: 0, y: 0}
       data:
         first:
-          name: _OutlineTex
+          name: _FillTex
         second:
           m_Texture: {fileID: 2800000, guid: a47461252320b5b4f8281b410a3f5aa1, type: 3}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
         first:
-          name: _FillTex
+          name: _OutlineTex
         second:
           m_Texture: {fileID: 2800000, guid: a47461252320b5b4f8281b410a3f5aa1, type: 3}
           m_Scale: {x: 1, y: 1}
@@ -50,20 +50,20 @@ Material:
         second: .00499999989
       data:
         first:
-          name: _Scribbliness
-        second: 0
-      data:
-        first:
           name: _RedrawRate
         second: 0
       data:
         first:
           name: _QuantizationLevels
-        second: 5
+        second: 32
       data:
         first:
           name: _ContrastBoost
-        second: 2
+        second: 1
+      data:
+        first:
+          name: _Scribbliness
+        second: 0
       data:
         first:
           name: _Threshold

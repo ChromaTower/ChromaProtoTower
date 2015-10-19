@@ -5,8 +5,8 @@ using GamepadInput;
 public class DropperCamera : MonoBehaviour {
 
 	// Used for placing new blocks on screen
-	private GameObject blockPlace;
-
+	private GameObject blockPlace = null;
+	private Vector3 lastBlockPos = Vector3.zero;
 
 	// The increments the camera is snapped to when rotating
 	// Not advised that you change this, but if you want to...
@@ -50,16 +50,12 @@ public class DropperCamera : MonoBehaviour {
 		// Set the initial angle based on the camera's rotation
 		initAngle = transform.eulerAngles.y;
 
-		// Create a new block to start
-		blockPlace = tower.createBlock();
-
-
 		Camera camera = (Camera)GetComponent<Camera>();
 
 		// Makes the map fit in the camera
-		camera.orthographicSize = Mathf.Max(tower.blockArraySizeX, tower.blockArraySizeZ) - 0.5f;
+		camera.orthographicSize = Mathf.Max(tower.maxX - tower.minX, tower.maxZ - tower.minZ) - 1f;
 
-		transform.position = new Vector3(tower.transform.position.x - (tower.mapXSize/2), -8, tower.transform.position.z - (tower.mapZSize/2));
+		transform.position = new Vector3(tower.transform.position.x - (tower.mapXSize/2), -12, tower.transform.position.z - (tower.mapZSize/2));
 		maxDistAboveTower = camera.orthographicSize;
 
 
@@ -80,10 +76,9 @@ public class DropperCamera : MonoBehaviour {
 
 	void VerticalMoveUpdate()
 	{
-		transform.position = new Vector3(0f, camY + maxDistAboveTower, 0f);
-
 		// Prevent camera from leaving boundaries
 		TowerManager tower = GameManager.instance.getTower();
+		transform.position = new Vector3(0f, (Mathf.Round(camY/ tower.snap) * tower.snap) + maxDistAboveTower, 0f);
 
 		if (transform.position.y < tower.minY)
 		{
@@ -95,7 +90,7 @@ public class DropperCamera : MonoBehaviour {
 
 		GameObject grid = GameManager.instance.getTower().previewGrid;
 		// TODO: Change the magic values
-		grid.transform.position = new Vector3(grid.transform.position.x, (Mathf.Round(camY / tower.snap) * tower.snap) - (tower.snap / 2), grid.transform.position.z);
+		//grid.transform.position = new Vector3(grid.transform.position.x, ((Mathf.Round (transform.position.y / tower.snap) - 5f) * tower.snap), grid.transform.position.z);
 	}
 
 	void rotateUpdate()
@@ -105,7 +100,7 @@ public class DropperCamera : MonoBehaviour {
 		{
 			int scroll;
 
-			if (GameManager.instance.controller)
+			if (GameManager.instance.controllerBuilder)
 			{
 				int scroll1 = GamePad.GetButtonUp (GamePad.Button.RightShoulder, GamePad.Index.Two) ? 1 : 0;
 				int scroll2 = GamePad.GetButtonUp (GamePad.Button.LeftShoulder, GamePad.Index.Two) ? 1 : 0;
@@ -142,8 +137,10 @@ public class DropperCamera : MonoBehaviour {
 
 	void mouseUpdate()
 	{
+		TowerManager tower = GameManager.instance.getTower ();
+
 		// TODO: Get rid of this soon
-		if (!GameManager.instance.controller)
+		if (!GameManager.instance.controllerBuilder)
 		{
 			if (Input.mousePosition.y > (Screen.height - 100))
 			{
@@ -155,98 +152,126 @@ public class DropperCamera : MonoBehaviour {
 		} 
 
 
-		if ((GamePad.GetButtonDown (GamePad.Button.A, GamePad.Index.Two)) || (Input.GetMouseButtonDown(0)))
+		if (GamePad.GetButtonUp (GamePad.Button.X, GamePad.Index.Two))
 		{
-			blockPlace.GetComponent<Block>().preview();
-		} else if ((GamePad.GetButtonUp (GamePad.Button.A, GamePad.Index.Two)) || (Input.GetMouseButtonUp(0))) {
-			if (blockWaiting <= 0f)
+			tower.undoBlock ();
+		}
+
+
+		if (!blockPlace)
+		{
+			if (tower.blockEnergy > 0)
 			{
-				// Wake up the block - time to dropPlace();
-				blockPlace.GetComponent<Block>().Drop();
-				
-				// Reset the timer so the player has to wait a bit before spawning another block
-				blockWaiting = blockWaitTime;
-				
 				// Create a new block
 				blockPlace = tower.createBlock();
+				blockPlace.transform.position = lastBlockPos;
 			}
-		} else {		
-			// Reduce the timer
+		} else {
+			// Reduce the time
 			blockWaiting -= Time.deltaTime;
 
-			if (GameManager.instance.controller)
-			{
-				if (blockPlace)
+				if (GameManager.instance.controllerBuilder)
 				{
-					if (GamePad.GetButtonUp(GamePad.Button.B, GamePad.Index.Two))
-					{
-						blockPlace.transform.RotateAround(blockPlace.transform.position, Vector3.up, snapAngle);
-					}
+						// Why isn't CamX-Z a Vector3 anyway?
 
-					float leftStickX = GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.Two).x * Time.deltaTime * gridMoveRate;
-					float leftStickY = GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.Two).y * Time.deltaTime * gridMoveRate;
-					float dPadX = GamePad.GetAxis (GamePad.Axis.Dpad, GamePad.Index.Two).x * Time.deltaTime * gridMoveRate;
-					float dPadY = GamePad.GetAxis (GamePad.Axis.Dpad, GamePad.Index.Two).y * Time.deltaTime * gridMoveRate;
+						if (GamePad.GetButtonUp(GamePad.Button.B, GamePad.Index.Two))
+						{
+							blockPlace.transform.RotateAround(blockPlace.transform.position, Vector3.up, snapAngle);
+						}
 
-					// As the camera rotates, it has to be relative
-					if (transform.eulerAngles.y >= 270)
-					{
-						camX -= leftStickY;
-						camZ += leftStickX;
+						float leftStickX = GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.Two).x * Time.deltaTime * gridMoveRate;
+						float leftStickY = GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.Two).y * Time.deltaTime * gridMoveRate;
+						float dPadX = GamePad.GetAxis (GamePad.Axis.Dpad, GamePad.Index.Two).x * Time.deltaTime * gridMoveRate;
+						float dPadY = GamePad.GetAxis (GamePad.Axis.Dpad, GamePad.Index.Two).y * Time.deltaTime * gridMoveRate;
 
-						camX -= dPadY;
-						camZ += dPadX;
-					} else if (transform.eulerAngles.y >= 180) {
-						camX -= leftStickX;
-						camZ -= leftStickY;
+						// As the camera rotates, it has to be relative
+						if (transform.eulerAngles.y >= 270)
+						{
+							camX -= leftStickY;
+							camZ += leftStickX;
 
-						camX -= dPadX;
-						camZ -= dPadY;
-					} else if (transform.eulerAngles.y >= 90) {
-						camX += leftStickY;
-						camZ -= leftStickX;
+							camX -= dPadY;
+							camZ += dPadX;
+						} else if (transform.eulerAngles.y >= 180) {
+							camX -= leftStickX;
+							camZ -= leftStickY;
 
-						camX += dPadY;
-						camZ -= dPadX;
-					} else {
-						camX += leftStickX;
-						camZ += leftStickY;
+							camX -= dPadX;
+							camZ -= dPadY;
+						} else if (transform.eulerAngles.y >= 90) {
+							camX += leftStickY;
+							camZ -= leftStickX;
 
-						camX += dPadX;
-						camZ += dPadY;
-					}
+							camX += dPadY;
+							camZ -= dPadX;
+						} else {
+							camX += leftStickX;
+							camZ += leftStickY;
 
-					camY += GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.Two).y * Time.deltaTime * 15f;
+							camX += dPadX;
+							camZ += dPadY;
+						}
 
-					TowerManager tower = GameManager.instance.getTower ();
-					camX = Mathf.Clamp (camX, tower.transform.position.x - (tower.mapXSize / 2), tower.transform.position.x + (tower.mapXSize / 2));
-					camY = Mathf.Clamp (camY, tower.transform.position.y - (tower.mapYSize / 2), tower.transform.position.y + (tower.mapYSize / 2));
-					camZ = Mathf.Clamp (camZ, tower.transform.position.z - (tower.mapZSize / 2), tower.transform.position.z + (tower.mapZSize / 2));
-					blockPlace.transform.position = new Vector3(camX, camY, camZ);
+						camY += GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.Two).y * Time.deltaTime * 15f;
+
+
+
+						Vector3 b = blockPlace.transform.position;
+						if (camX > tower.snap)
+						{
+							blockPlace.transform.position = new Vector3(b.x + tower.snap, b.y, b.z);
+							camX -= tower.snap;
+						} else if (camX < -tower.snap)
+						{
+							blockPlace.transform.position = new Vector3(b.x - tower.snap, b.y, b.z);
+							camX += tower.snap;
+						}
+						if (camZ > tower.snap)
+						{
+							blockPlace.transform.position = new Vector3(b.x, b.y, b.z + tower.snap);
+							camZ -= tower.snap;
+						} else if (camZ < -tower.snap)
+						{
+							blockPlace.transform.position = new Vector3(b.x, b.y, b.z - tower.snap);
+							camZ += tower.snap;
+						}
 				}
-			}
-			else
-			{
-				if (blockPlace)
+				else
 				{
-					if (Input.GetMouseButtonDown(1))
-					{
-						blockPlace.transform.RotateAround(blockPlace.transform.position, Vector3.up, snapAngle);
-					}
+						if (Input.GetMouseButtonDown(1))
+						{
+							blockPlace.transform.RotateAround(blockPlace.transform.position, Vector3.up, snapAngle);
+						}
 
-					// Line tracing for "previews"
-					Plane plane = new Plane(Vector3.up, 0);
+						// Line tracing for "previews"
+						Plane plane = new Plane(Vector3.up, 0);
 
-					float distance;
-					Ray ray = GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
-					if (plane.Raycast(ray, out distance))
-					{
-						Vector3 pt = ray.GetPoint(distance);
-						// TODO: Predicting the place
-						blockPlace.transform.position = new Vector3(Mathf.Clamp(pt.x, tower.transform.position.x - (tower.mapXSize/2), tower.transform.position.x + (tower.mapXSize/2)),
-						                                            tower.previewGrid.transform.position.y,
-						                                            Mathf.Clamp(pt.z, tower.transform.position.z - (tower.mapZSize/2), tower.transform.position.z + (tower.mapZSize/2)));
-					}
+						float distance;
+						Ray ray = GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+						if (plane.Raycast(ray, out distance))
+						{
+							Vector3 pt = ray.GetPoint(distance);
+							// TODO: Predicting the place
+							blockPlace.transform.position = new Vector3(Mathf.Clamp(pt.x, tower.transform.position.x - (tower.mapXSize/2), tower.transform.position.x + (tower.mapXSize/2)),
+							                                            Mathf.Clamp(pt.x, tower.transform.position.y - (tower.mapYSize/2), tower.transform.position.y + (tower.mapYSize/2)),
+							                                            Mathf.Clamp(pt.z, tower.transform.position.z - (tower.mapZSize/2), tower.transform.position.z + (tower.mapZSize/2)));
+						}
+				}
+
+			if (blockWaiting <= 0f)
+			{
+				if ((GamePad.GetButtonDown (GamePad.Button.A, GamePad.Index.Two)) || (Input.GetMouseButtonDown(0)))
+				{
+					blockPlace.GetComponent<Block>().preview();
+				} else if ((GamePad.GetButtonUp (GamePad.Button.A, GamePad.Index.Two)) || (Input.GetMouseButtonUp(0))) {
+					// Wake up the block - time to dropPlace();
+					lastBlockPos = blockPlace.transform.position;
+					blockPlace.GetComponent<Block>().Drop();
+					
+					// Reset the timer so the player has to wait a bit before spawning another block
+					blockWaiting = blockWaitTime;
+					
+					blockPlace = null;
 				}
 			}
 		}

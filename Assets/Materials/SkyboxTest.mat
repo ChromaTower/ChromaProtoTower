@@ -38,6 +38,13 @@ Material:
           m_Offset: {x: 0, y: 0}
       data:
         first:
+          name: _Tex
+        second:
+          m_Texture: {fileID: 8900000, guid: 0e3c44bd21b031e4d8b722599b322079, type: 2}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
           name: _ParallaxMap
         second:
           m_Texture: {fileID: 0}
@@ -82,42 +89,42 @@ Material:
         first:
           name: _FrontTex
         second:
-          m_Texture: {fileID: 2800000, guid: b6bb58acf4683334b8f802e77a6facdf, type: 3}
+          m_Texture: {fileID: 2800000, guid: d5d2bc78a26040f4bad30a2a9be098ed, type: 3}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
         first:
           name: _BackTex
         second:
-          m_Texture: {fileID: 2800000, guid: e260614d798aff345acd6e9ae57fbea6, type: 3}
+          m_Texture: {fileID: 2800000, guid: 44c5c5f907dc9414fa49c242e767abfd, type: 3}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
         first:
           name: _LeftTex
         second:
-          m_Texture: {fileID: 2800000, guid: 76dddab13c2eaa04c81333d05fa292b0, type: 3}
+          m_Texture: {fileID: 2800000, guid: 821215801daef184786ef830f8764088, type: 3}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
         first:
           name: _RightTex
         second:
-          m_Texture: {fileID: 2800000, guid: dc2cc7b63375d924389b64674ae4bbd0, type: 3}
+          m_Texture: {fileID: 2800000, guid: 6e72de4ef930c0145a209f88f49e318a, type: 3}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
         first:
           name: _UpTex
         second:
-          m_Texture: {fileID: 2800000, guid: ae2513b1d8da8dd4984e1831fd23e932, type: 3}
+          m_Texture: {fileID: 2800000, guid: ec87264eebc77974f82b13187c49cc45, type: 3}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
         first:
           name: _DownTex
         second:
-          m_Texture: {fileID: 2800000, guid: bea713ff65d9479458084d4ea3f55246, type: 3}
+          m_Texture: {fileID: 2800000, guid: d0d8a87a87f5e2e4381f7e944e42e9d1, type: 3}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
     m_Floats:
@@ -136,6 +143,14 @@ Material:
       data:
         first:
           name: _Exposure
+        second: .699999988
+      data:
+        first:
+          name: _SunSize
+        second: .0399999991
+      data:
+        first:
+          name: _AtmosphereThickness
         second: 1
       data:
         first:
@@ -188,5 +203,13 @@ Material:
         second: {r: 1, g: 1, b: 1, a: 1}
       data:
         first:
+          name: _SkyTint
+        second: {r: .5, g: .5, b: .5, a: 1}
+      data:
+        first:
+          name: _GroundColor
+        second: {r: .368999988, g: .349000007, b: .340999991, a: 1}
+      data:
+        first:
           name: _Tint
-        second: {r: .5, g: .5, b: .5, a: .5}
+        second: {r: .845588207, g: .845588207, b: .845588207, a: .5}

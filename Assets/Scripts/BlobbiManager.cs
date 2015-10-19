@@ -26,7 +26,7 @@ public class BlobbiManager : MonoBehaviour {
 		hueSpeed += (float)(vel/3.2f) * Time.deltaTime;
 
 		// primitive friction
-		hueSpeed *= 0.985f;
+		hueSpeed *= 0;//0.985f;
 
 		hue += hueSpeed * Time.deltaTime;
 

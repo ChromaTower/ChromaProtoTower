@@ -5,11 +5,14 @@ using System.Collections.Generic;
 public class TowerManager : MonoBehaviour {
 
 	// The blocks used - prefab
+	public GameObject pickup;
+
 	public GameObject block;
 	private List<GameObject> blocks = new List<GameObject>();	
 
 	public GameObject floor;
 	public GameObject previewGrid;
+	public GameObject previewGrid2;
 
 	public GameObject wall;
 	private List<GameObject> walls = new List<GameObject>();	
@@ -35,9 +38,17 @@ public class TowerManager : MonoBehaviour {
 	public float maxY = 0;
 	public float maxZ = 0;
 
+	// Please account for the first block being created!
+	// So you need +1 for the energy!
+	public int blockEnergy = 9;
+
+	// The amount of space between pickups
+	public int pickupSpacing = 5;
+
+
 	// How tall the tower is
 	private float height = 0;
-
+	
 	// Use this for initialization
 	void Start () {
 		blockArraySizeX = (int)(mapXSize / snap);
@@ -71,15 +82,19 @@ public class TowerManager : MonoBehaviour {
 
 
 
-		floor = (GameObject)Object.Instantiate(floor, transform.position - new Vector3(centreShiftX, snap/2, centreShiftZ), Quaternion.identity);
-		floor.transform.localScale = new Vector3(mapXSize / 10 , 1, mapZSize / 10);
-		floor.GetComponent<Renderer>().material.mainTextureScale = new Vector2(blockArraySizeX / 2, blockArraySizeZ / 2);
+	//	floor = (GameObject)Object.Instantiate(floor, transform.position - new Vector3(centreShiftX, snap/2, centreShiftZ), Quaternion.identity);
+	//	floor.transform.localScale = new Vector3(mapXSize / 10 , 1, mapZSize / 10);
+	//	floor.GetComponent<Renderer>().material.mainTextureScale = new Vector2(blockArraySizeX / 2, blockArraySizeZ / 2);
 
 		previewGrid = (GameObject)Object.Instantiate(previewGrid, transform.position - new Vector3(centreShiftX, snap/2, centreShiftZ), Quaternion.identity);
 		previewGrid.transform.localScale = new Vector3(mapXSize / 10 , 1, mapZSize / 10);
 		previewGrid.GetComponent<Renderer>().material.mainTextureScale = new Vector2(blockArraySizeX / 2, blockArraySizeZ / 2);
 
-
+		previewGrid2 = (GameObject)Object.Instantiate(previewGrid, transform.position - new Vector3(centreShiftX, snap/2, centreShiftZ), Quaternion.identity);
+		previewGrid2.transform.localScale = new Vector3(mapXSize / 10 , 1, mapZSize / 10);
+		previewGrid2.GetComponent<Renderer>().material.mainTextureScale = new Vector2(blockArraySizeX / 2, blockArraySizeZ / 2);
+		
+		generatePickups();
 
 		/*for (int i = 0; i <= 3; i++)
 		{
@@ -101,6 +116,22 @@ public class TowerManager : MonoBehaviour {
 			walls.Add(w);
 		}*/
 
+
+	}
+
+	private void generatePickups()
+	{
+		for (int i = pickupSpacing; i < blockArraySizeY; i += pickupSpacing)
+		{
+			Vector3 pos = new Vector3(Random.Range (0, blockArraySizeX), i, Random.Range (0, blockArraySizeZ));
+
+			GameObject p = (GameObject)Object.Instantiate(pickup, 
+			                                              new Vector3(minX + (pos.x * snap),
+			            											  minY + (pos.y * snap),
+			            											  minZ + (pos.z * snap)),
+								  			            Quaternion.identity);
+
+		}
 	}
 
 	public float getSnap()
@@ -185,6 +216,32 @@ public class TowerManager : MonoBehaviour {
 		}
 
 		blockArray = new bool[blockArraySizeX, blockArraySizeY, blockArraySizeZ];
+	}
+
+	public bool undoBlock()
+	{
+		int count = blocks.Count - 1;
+		while(count >= 0)
+		{
+			GameObject b = blocks[count];
+			if (b)
+			{
+				if (b.GetComponent<Block>().isActivated())
+				{
+					if (removeBlock (b))
+					{
+						blockEnergy += 1;
+						return true;
+					} else {
+						return false;
+					}
+				}
+			}
+
+			count--;
+		}
+
+		return false;
 	}
 
 	// Attempts to remove a block
@@ -292,11 +349,17 @@ public class TowerManager : MonoBehaviour {
 	// Create a block in the manager's position
 	public GameObject createBlock()
 	{
-		GameObject b = (GameObject)Object.Instantiate(block, transform.position, Quaternion.identity);
-		blocks.Add(b);
-	
-		return b;
+		if (blockEnergy > 0)
+		{
+			GameObject b = (GameObject)Object.Instantiate(block, transform.position, Quaternion.identity);
+			blocks.Add(b);
 
+			blockEnergy -= 1;
+
+			return b;
+		} else {
+			return null;
+		}
 	}
 
 	// Update is called once per frame

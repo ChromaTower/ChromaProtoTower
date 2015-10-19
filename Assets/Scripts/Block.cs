@@ -7,6 +7,7 @@ public class Block : MonoBehaviour {
 	private Rigidbody rb;
 	public Renderer re;
 	public Material mat;
+	public Material matPreview;
 
 	private float snap;
 	public bool snapping = true;
@@ -28,6 +29,7 @@ public class Block : MonoBehaviour {
 
 
 	private List<GameObject> shape = new List<GameObject>();
+	private List<GameObject> previews = new List<GameObject>();
 
 
 	// Returns the block array
@@ -38,10 +40,8 @@ public class Block : MonoBehaviour {
 
 
 	// Sets up the tetromino
-	List<GameObject> createShape()
+	private void createShape()
 	{
-		List<GameObject> result = new List<GameObject>();
-
 		// Add 4 cubes to the shape
 		for (int i = 0; i < 4; i++)
 		{
@@ -52,10 +52,18 @@ public class Block : MonoBehaviour {
 			cube.GetComponent<Renderer>().material = mat;
 			cube.layer = 10;
 			//cube.AddComponent<Rigidbody>();
-			result.Add(cube);
+			shape.Add(cube);
+
+			GameObject cube2 = GameObject.CreatePrimitive(PrimitiveType.Plane);
+			cube2.transform.parent = transform;
+			cube2.transform.localScale = new Vector3(snap / 10, snap / 10, snap / 10);
+			cube2.transform.position = transform.position;
+			cube2.GetComponent<Renderer>().material = matPreview;
+			cube2.layer = 0;
+			//cube.AddComponent<Rigidbody>();
+			previews.Add(cube2);
 		}
 
-		return result;
 	}
 
 	void tetrominoSetup()
@@ -89,8 +97,6 @@ public class Block : MonoBehaviour {
 			shape[3].transform.position = shape[0].transform.position + (snap * new Vector3( 2f, 1f, 0f));
 		}
 
-
-	
 	}
 
 	// Used as an alternate test
@@ -126,7 +132,7 @@ public class Block : MonoBehaviour {
 		re = GetComponent<Renderer>();
 		re.enabled = true;
 
-		shape = createShape();
+		createShape();
 		tetrominoSetup();
 		randomiseRotation();
 
@@ -175,7 +181,7 @@ public class Block : MonoBehaviour {
 	{
 		rb.isKinematic = true;
 		rb.detectCollisions = false;
-		setAlpha(0.5f);
+		//setAlpha(0.5f);
 
 		falling = false;
 	}
@@ -187,6 +193,7 @@ public class Block : MonoBehaviour {
 		// Only drop the block if it's in a valid position
 		if (tower.checkBounds ((int)(target.x), (int)(target.y), (int)(target.z)))
 		{
+			transform.position = new Vector3(transform.position.x, target.y * snap, transform.position.z);
 			rb.detectCollisions = true;
 			setAlpha(1f);
 			rb.WakeUp();
@@ -214,6 +221,20 @@ public class Block : MonoBehaviour {
 	{
 		activated = true;
 		rb.isKinematic = true;
+
+		foreach (GameObject p in previews)
+		{
+			Destroy(p);
+		}
+
+		foreach (GameObject s in shape)
+		{
+			s.GetComponent<Renderer>().material = mat;
+		}
+
+
+		previews = new List<GameObject>();
+
 	}
 
 	// Looks up the block list to find the lowest position a block will fall to
@@ -344,8 +365,8 @@ public class Block : MonoBehaviour {
 			                     maxFall,
 			                     Mathf.Round((transform.position.z - tower.minZ) / (float)snap));
 			
-			transform.position = new Vector3(transform.position.x, maxFall * snap, transform.position.z);
-			//tower.previewGrid.transform.position = new Vector3(tower.previewGrid.transform.position.x, transform.position.y - (snap / 2), tower.previewGrid.transform.position.z);
+			//transform.position = new Vector3(transform.position.x, maxFall * snap, transform.position.z);
+			
 		}
 	}
 
@@ -385,15 +406,23 @@ public class Block : MonoBehaviour {
 		{
 			// Snap position
 			transform.position = new Vector3(Mathf.Round(transform.position.x / (float)snap) * snap,
-			                                 Mathf.Round(transform.position.y / (float)snap) * snap,
+			                                 Mathf.Round(tower.transform.position.y / (float)snap) * snap,
 			                                 Mathf.Round(transform.position.z / (float)snap) * snap);
 			
+			tower.previewGrid.transform.position = new Vector3(tower.previewGrid.transform.position.x, transform.position.y - (snap / 2), tower.previewGrid.transform.position.z);
+
 			// Move the block inside the boundaries
 			checkBlockBounds();
 
 			if (previewed)
 			{
 				PreviewUpdate();
+
+				for (int i = 0; i < 4; i++)
+				{
+					tower.previewGrid2.transform.position = new Vector3(tower.previewGrid.transform.position.x, (target.y * snap) - (snap/2), tower.previewGrid.transform.position.z);
+					previews[i].transform.position = new Vector3(shape[i].transform.position.x, tower.previewGrid2.transform.position.y, shape[i].transform.position.z);
+				}
 			}
 		}
 	}

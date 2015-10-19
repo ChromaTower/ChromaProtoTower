@@ -15,6 +15,10 @@ public class CameraFollow : MonoBehaviour
 	
 	private Transform followTarget;
 	private bool camColliding;
+
+	private Vector3 posPrev, posPrev2;
+	private Quaternion rotPrev, rotPrev2;
+	private bool notColliding = true;
 	
 	//setup objects
 	void Awake()
@@ -30,10 +34,17 @@ public class CameraFollow : MonoBehaviour
 		if(mouseFreelook)
 			rotateDamping = 0f;
 	}
-	
+
+	void FixedUpdate()
+	{
+		notColliding = true;
+	}
+
 	//run our camera functions each frame
 	void Update()
 	{
+		
+
 		if (!target)
 			return;
 		
@@ -42,11 +53,47 @@ public class CameraFollow : MonoBehaviour
 			SmoothLookAt();
 		else
 			transform.LookAt(target.position);
+
+
+		GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+		GetComponent<Rigidbody>().velocity = Vector3.zero;
+	}
+
+	void LateUpdate()
+	{
+		/*
+		if (notColliding)
+		{
+			posPrev = transform.position;
+			rotPrev = transform.rotation;
+		} else {
+			transform.position = posPrev;
+			transform.rotation = rotPrev;
+			GetComponent<Rigidbody>().position = posPrev;
+			GetComponent<Rigidbody>().rotation = rotPrev;
+		}*/
+
+		transform.position = GetComponent<Rigidbody>().position;
+		transform.rotation = GetComponent<Rigidbody>().rotation;
+	}
+
+	void OnCollisionEnter(Collision c)
+	{
+		//notColliding = false;
+		//Debug.LogWarning("NOOOOOOOOOOOOOOOO", transform);
+	}
+
+	void OnCollisionStay(Collision c)
+	{
+		//notColliding = false;
+		//Debug.LogWarning("NOOOOOOOOOOOOOOOO", transform);
 	}
 
 	//toggle waterfilter, is camera clipping walls?
 	void OnTriggerEnter(Collider other)
 	{
+
+			
 		if (other.tag == "Water" && waterFilter)
 			waterFilter.GetComponent<Renderer>().enabled = true;
 	}
@@ -68,63 +115,59 @@ public class CameraFollow : MonoBehaviour
 	//move camera smoothly toward its target
 	void SmoothFollow()
 	{
-		//move the followTarget (empty gameobject created in awake) to correct position each frame
-		followTarget.position = target.position;
-		followTarget.Translate(targetOffset, Space.Self);
-		if (lockRotation)
+		if (notColliding)
 		{
-			if (GameManager.instance.controller)
+			//move the followTarget (empty gameobject created in awake) to correct position each frame
+			followTarget.position = target.position;
+			followTarget.Translate(targetOffset, Space.Self);
+			if (lockRotation)
 			{
-				float axisX = GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.One).x * inputRotationSpeed * Time.deltaTime;
+				if (GameManager.instance.controllerBlobbi)
+				{
+					float axisX = GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.One).x * inputRotationSpeed * Time.deltaTime;
+					followTarget.RotateAround (target.position,Vector3.up, axisX);
+					float axisY = GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.One).y * inputRotationSpeed * Time.deltaTime;
+					followTarget.RotateAround (target.position, transform.right, -axisY);
+				}
+				else
+				{
+					followTarget.rotation = target.rotation;
+				}
+
+			}
+			
+			if(mouseFreelook)
+			{
+				//mouse look
+				float axisX = Input.GetAxis ("Mouse X") * inputRotationSpeed * Time.deltaTime;
 				followTarget.RotateAround (target.position,Vector3.up, axisX);
-				float axisY = GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.One).y * inputRotationSpeed * Time.deltaTime;
+				float axisY = Input.GetAxis ("Mouse Y") * inputRotationSpeed * Time.deltaTime;
 				followTarget.RotateAround (target.position, transform.right, -axisY);
 			}
 			else
 			{
-				followTarget.rotation = target.rotation;
+				//keyboard camera rotation look
+				float axis = 0;//Input.GetAxis ("CamHorizontal") * inputRotationSpeed * Time.deltaTime;
+				followTarget.RotateAround (target.position, Vector3.up, axis);
 			}
-
-		}
-		
-		if(mouseFreelook)
-		{
-			//mouse look
-			float axisX = Input.GetAxis ("Mouse X") * inputRotationSpeed * Time.deltaTime;
-			followTarget.RotateAround (target.position,Vector3.up, axisX);
-			float axisY = Input.GetAxis ("Mouse Y") * inputRotationSpeed * Time.deltaTime;
-			followTarget.RotateAround (target.position, transform.right, -axisY);
-
-			TowerManager tower = GameManager.instance.getTower ();
-
-			followTarget.position = new Vector3(Mathf.Clamp (followTarget.position.x, tower.minX, tower.maxX),
-			                                    Mathf.Clamp (followTarget.position.y, tower.minY, tower.maxY),
-			                                    Mathf.Clamp (followTarget.position.z, tower.minZ, tower.maxZ));
 			
+			//where should the camera be next frame?
+			Vector3 nextFramePosition = Vector3.Lerp(transform.position, followTarget.position, followSpeed * Time.deltaTime);
+			Vector3 direction = nextFramePosition - target.position;
+			//raycast to this position
+			RaycastHit hit;
+			if(Physics.Raycast (target.position, direction, out hit, direction.magnitude + 0.3f))
+			{
+				transform.position = nextFramePosition;
+				foreach(string tag in avoidClippingTags)
+					if(hit.transform.tag == tag)
+						transform.position = hit.point - direction.normalized * 0.3f;
+			}
+			else
+			{
+				//otherwise, move cam to intended position
+				transform.position = nextFramePosition;
+			}
 		}
-		else
-		{
-			//keyboard camera rotation look
-			float axis = 0;//Input.GetAxis ("CamHorizontal") * inputRotationSpeed * Time.deltaTime;
-			followTarget.RotateAround (target.position, Vector3.up, axis);
-		}
-		
-		//where should the camera be next frame?
-		Vector3 nextFramePosition = Vector3.Lerp(transform.position, followTarget.position, followSpeed * Time.deltaTime);
-		Vector3 direction = nextFramePosition - target.position;
-		//raycast to this position
-		RaycastHit hit;
-		if(Physics.Raycast (target.position, direction, out hit, direction.magnitude + 0.3f))
-		{
-			transform.position = nextFramePosition;
-			foreach(string tag in avoidClippingTags)
-				if(hit.transform.tag == tag)
-					transform.position = hit.point - direction.normalized * 0.3f;
-		}
-		else
-		{
-			//otherwise, move cam to intended position
-			transform.position = nextFramePosition;
-		}
-	}
+	} 
 }

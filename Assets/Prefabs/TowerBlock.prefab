@@ -12,7 +12,7 @@ GameObject:
   - 114: {fileID: 11486988}
   - 23: {fileID: 2320618}
   - 65: {fileID: 6518968}
-  m_Layer: 10
+  m_Layer: 8
   m_Name: TowerBlock
   m_TagString: Block
   m_Icon: {fileID: 0}
@@ -95,6 +95,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   re: {fileID: 0}
   mat: {fileID: 2100000, guid: c5bee89cc40002d499f28a3bf89ca0fe, type: 2}
+  matPreview: {fileID: 2100000, guid: bed74fe3df46d534c9e0108cca05df25, type: 2}
   snapping: 1
   resetColourTime: 9999
 --- !u!1001 &100100000
@@ -146,7 +147,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Layer
-      value: 10
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Enabled
@@ -160,6 +161,14 @@ Prefab:
       propertyPath: resetColourTime
       value: 9999
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: matLight
+      value: 
+      objectReference: {fileID: 2100000, guid: bed74fe3df46d534c9e0108cca05df25, type: 2}
+    - target: {fileID: 0}
+      propertyPath: matPreview
+      value: 
+      objectReference: {fileID: 2100000, guid: bed74fe3df46d534c9e0108cca05df25, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 107870}

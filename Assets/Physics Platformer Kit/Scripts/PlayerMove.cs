@@ -60,7 +60,7 @@ public class PlayerMove : MonoBehaviour
 			floorChecks = new GameObject().transform;
 			floorChecks.name = "FloorChecks";
 			floorChecks.parent = transform;
-			floorChecks.position = transform.position;
+			floorChecks.position = transform.position + new Vector3(0f, 0f, 0f);
 			GameObject check = new GameObject();
 			check.name = "Check1";
 			check.transform.parent = floorChecks;
@@ -127,7 +127,7 @@ public class PlayerMove : MonoBehaviour
 		
 		//get movement input, set direction to move in
 		float h, v;
-		if (GameManager.instance.controller)
+		if (GameManager.instance.controllerBlobbi)
 		{
 			h = GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.One).x;
 			v = GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.One).y;
@@ -264,9 +264,9 @@ public class PlayerMove : MonoBehaviour
 	{
 		//keep how long we have been on the ground
 		groundedCount = (grounded) ? groundedCount += Time.deltaTime : 0f;
-		
+
 		//play landing sound
-		if(groundedCount < 0.25 && groundedCount != 0 && !GetComponent<AudioSource>().isPlaying && landSound && GetComponent<Rigidbody>().velocity.y < 1)
+		if(groundedCount < 0.1 && groundedCount != 0 && GetComponent<Rigidbody>().velocity.y < 1 && landSound && !GetComponent<AudioSource>().isPlaying)
 		{
 			GetComponent<AudioSource>().volume = 40;
 			GetComponent<AudioSource>().clip = landSound;
@@ -276,8 +276,8 @@ public class PlayerMove : MonoBehaviour
 
 		if (!grounded)
 		{
-			if (GameManager.instance.controller && GamePad.GetButtonDown(GamePad.Button.A, GamePad.Index.One)
-			    || !GameManager.instance.controller && Input.GetButtonDown ("Jump"))
+			if (GameManager.instance.controllerBlobbi && GamePad.GetButtonDown(GamePad.Button.A, GamePad.Index.One)
+			    || !GameManager.instance.controllerBlobbi && Input.GetButtonDown ("Jump"))
 			{
 				airPressTime = Time.time;
 			}
@@ -288,19 +288,11 @@ public class PlayerMove : MonoBehaviour
 		if (grounded && slope < slopeLimit)
 		{
 			//and we press jump, or we pressed jump justt before hitting the ground
-			if ((GamePad.GetButtonDown(GamePad.Button.A, GamePad.Index.One) && GameManager.instance.controller) 
-			    || (!GameManager.instance.controller && Input.GetButtonDown ("Jump"))
-			    || airPressTime + jumpLeniancy > Time.time)
+			if ((GamePad.GetButtonDown(GamePad.Button.A, GamePad.Index.One) && GameManager.instance.controllerBlobbi) 
+			    || (!GameManager.instance.controllerBlobbi && Input.GetButtonDown ("Jump"))
+			    || (airPressTime + jumpLeniancy > Time.time))
 			{	
-				//increment our jump type if we haven't been on the ground for long
-				onJump = (groundedCount < jumpDelay) ? Mathf.Min(2, onJump + 1) : 0;
-				//execute the correct jump (like in mario64, jumping 3 times quickly will do higher jumps)
-				if (onJump == 0)
-						Jump (jumpForce);
-				else if (onJump == 1)
-						Jump (secondJumpForce);
-				else if (onJump == 2)
-						Jump (thirdJumpForce);
+				Jump (jumpForce);
 			}
 		}
 	}

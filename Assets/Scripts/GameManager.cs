@@ -6,20 +6,21 @@ public class GameManager : MonoBehaviour {
 	public static GameManager instance = null;
 
 	private TowerManager tower;
-	private DropperCamera camera;
-	private CameraFollow playerCamera;
+	private GameObject camera;
+	private GameObject playerCamera;
 	private GameObject player;
 	private GameObject blobbi;
 	private GameObject shadow;
 
 	// Are we using a controller or KB/mouse?
-	public bool controller = false;
+	public bool controllerBlobbi = false;
+	public bool controllerBuilder = false;
 
 	void OnLevelWasLoaded(int level) {
 		tower = GameObject.Find("Tower").GetComponent<TowerManager>();
 		// TODO: DON'T HARDCODE YOUR NAMES NICK YOU MORON
-		camera = GameObject.Find("IsoCamera").GetComponent<DropperCamera>();
-		playerCamera = GameObject.Find("Main Camera").GetComponent<CameraFollow>();
+		camera = GameObject.Find("IsoCamera");
+		playerCamera = GameObject.Find("Main Camera");
 		player = GameObject.Find("Player");
 		blobbi = GameObject.Find("Blobbi");
 		shadow = GameObject.Find("ShadowGoo");
@@ -59,12 +60,12 @@ public class GameManager : MonoBehaviour {
 	{
 		return tower;
 	}
-	public DropperCamera getBuilderCamera()
+	public GameObject getBuilderCamera()
 	{
 		return camera;
 	}
 
-	public CameraFollow getPlayerCamera()
+	public GameObject getPlayerCamera()
 	{
 		return playerCamera;
 	}

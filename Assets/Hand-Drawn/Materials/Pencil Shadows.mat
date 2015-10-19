@@ -7,7 +7,7 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Pencil Shadows
-  m_Shader: {fileID: 4800000, guid: 1b524c3df10fb8747b08b556348deb53, type: 3}
+  m_Shader: {fileID: 4800000, guid: 9eeaf185f6ecccb40b8f96757b09d5df, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 5
   m_CustomRenderQueue: -1
@@ -19,7 +19,28 @@ Material:
         first:
           name: _MainTex
         second:
-          m_Texture: {fileID: 0}
+          m_Texture: {fileID: 2800000, guid: 5ddc855ea8b830f44b0f59faf0ff875a, type: 3}
+          m_Scale: {x: 0, y: 0}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _BumpMap
+        second:
+          m_Texture: {fileID: 2800000, guid: bf85acdd2a12fc146a3d719caac93c30, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Cube
+        second:
+          m_Texture: {fileID: 8900000, guid: b995d4bd9d11078d11005b9844295342, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Ramp
+        second:
+          m_Texture: {fileID: 2800000, guid: ae6d398ad96e85e4785ce78aa3222ad9, type: 3}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
@@ -29,20 +50,33 @@ Material:
           m_Texture: {fileID: 2800000, guid: 6144b59d64a66184db5443c5083629c7, type: 3}
           m_Scale: {x: 8, y: 6}
           m_Offset: {x: 0, y: 0}
+    m_Floats:
       data:
         first:
-          name: _Ramp
-        second:
-          m_Texture: {fileID: 2800000, guid: ae6d398ad96e85e4785ce78aa3222ad9, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-    m_Floats:
+          name: _Shininess
+        second: .239999995
       data:
         first:
           name: _RedrawRate
         second: 4
+      data:
+        first:
+          name: _Outline
+        second: .00499999989
     m_Colors:
       data:
         first:
           name: _Color
-        second: {r: 1, g: 1, b: 1, a: 1}
+        second: {r: 0, g: .0482757092, b: 1, a: 1}
+      data:
+        first:
+          name: _SpecColor
+        second: {r: .786764741, g: .746269524, b: .746269524, a: 1}
+      data:
+        first:
+          name: _OutlineColor
+        second: {r: 0, g: 0, b: 0, a: 1}
+      data:
+        first:
+          name: _ReflectColor
+        second: {r: 1, g: 1, b: 1, a: .5}
