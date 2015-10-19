@@ -8,6 +8,8 @@ public class Block : MonoBehaviour {
 	public Renderer re;
 	public Material mat;
 	public Material matPreview;
+	public AudioClip blockLand;
+	public AudioClip blockTouch;
 
 	private float snap;
 	public bool snapping = true;
@@ -15,6 +17,8 @@ public class Block : MonoBehaviour {
 	private bool falling = false;
 	private bool previewed = false;
 	private bool activated = false;
+
+
 
 	// target positions
 	private Vector3 target = Vector3.zero;
@@ -235,6 +239,10 @@ public class Block : MonoBehaviour {
 
 		previews = new List<GameObject>();
 
+
+		GetComponent<AudioSource> ().volume = 0.4f;
+		GetComponent<AudioSource> ().clip = blockLand;
+		GetComponent<AudioSource> ().Play ();
 	}
 
 	// Looks up the block list to find the lowest position a block will fall to
@@ -277,6 +285,10 @@ public class Block : MonoBehaviour {
 				}
 				coloured = true;
 				colourTime = resetColourTime;
+				GetComponent<AudioSource>().volume = 1;
+				GetComponent<AudioSource>().clip = blockTouch;
+				GetComponent<AudioSource>().Play ();
+
 			}
 
 		}

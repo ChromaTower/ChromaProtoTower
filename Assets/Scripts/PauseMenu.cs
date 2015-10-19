@@ -18,7 +18,8 @@ public class PauseMenu : MonoBehaviour {
 	bool help1 = false;
 	bool help2 = false;
 	DropperCamera getClick;
-	
+	public AudioClip buttonClick;
+	AudioSource audio;
 	/// <summary>
 	/// Gets the component of the Dropper Camera 
 	/// </summary>
@@ -26,6 +27,7 @@ public class PauseMenu : MonoBehaviour {
 	{
 		Time.timeScale = 1f;
 		getClick = GameObject.Find("IsoCamera").GetComponent<DropperCamera>();
+		audio = GetComponent<AudioSource> ();
 	}
 	
 	/// <summary>
@@ -49,17 +51,24 @@ public class PauseMenu : MonoBehaviour {
 			// Make the Quit button.
 			if (GUI.Button (new Rect (330, 600, 150, 35), "Quit" )|| GamePad.GetButtonDown(GamePad.Button.B, GamePad.Index.One)) {
 				// quits game
-				q1 = true;
+				audio.PlayOneShot(buttonClick);
+				Application.Quit ();
 			}
 			
 			// Resumes the game when paused
-			if (GUI.Toggle (new Rect (330, 400, 150, 35), r1,"Resume","Button")!= r1 || GamePad.GetButtonDown(GamePad.Button.X, GamePad.Index.One)) {
-				r1 = !r1;
+			if (GUI.Button (new Rect (Screen.currentResolution.width / 2, (Screen.currentResolution.height / 2) - 100, 150, 35), "Back")) {
+				audio.PlayOneShot(buttonClick);
+				paused = togglePause();
+				
 			}
 			
 			//Toggles between displaying the keys
-			if (GUI.Toggle (new Rect (330, 500, 150, 35), help1,"Help","Button")!= help1 || GamePad.GetButtonDown(GamePad.Button.Y, GamePad.Index.One)) {
-				help1 = !help1;
+			if (GUI.Toggle (new Rect (Screen.currentResolution.width / 2, (Screen.currentResolution.height / 2), 150, 35), help,"Help","Button")!= help) {
+				audio.PlayOneShot(buttonClick);
+				help = !help;
+				if (help){
+					Debug.Log("Working");
+				}
 			}
 			if (help1){
 				//Debug.Log("Working");
