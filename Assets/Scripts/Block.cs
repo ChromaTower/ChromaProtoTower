@@ -8,6 +8,7 @@ public class Block : MonoBehaviour {
 	public Renderer re;
 	public Material mat;
 	public Material matPreview;
+	public Material matPreview2;
 	public AudioClip blockLand;
 	public AudioClip blockTouch;
 
@@ -53,7 +54,7 @@ public class Block : MonoBehaviour {
 			cube.transform.parent = transform;
 			cube.transform.localScale = new Vector3(snap, snap, snap);
 			cube.transform.position = transform.position;
-			cube.GetComponent<Renderer>().material = mat;
+			cube.GetComponent<Renderer>().material = matPreview2;
 			cube.layer = 10;
 			//cube.AddComponent<Rigidbody>();
 			shape.Add(cube);
@@ -61,9 +62,9 @@ public class Block : MonoBehaviour {
 			GameObject cube2 = GameObject.CreatePrimitive(PrimitiveType.Plane);
 			cube2.transform.parent = transform;
 			cube2.transform.localScale = new Vector3(snap / 10, snap / 10, snap / 10);
-			cube2.transform.position = transform.position;
+			cube2.transform.position = transform.position + new Vector3(0f, 0.01f, 0f);
 			cube2.GetComponent<Renderer>().material = matPreview;
-			cube2.layer = 0;
+			cube2.layer = 10;
 			//cube.AddComponent<Rigidbody>();
 			previews.Add(cube2);
 		}

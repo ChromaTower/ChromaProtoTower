@@ -6,7 +6,8 @@ using System.IO;
 public class GameManager : MonoBehaviour {
 	public static GameManager instance = null;
 	
-	private TowerManager tower;
+	private GameObject tower;
+	private TowerManager towerComp;
 	private GameObject camera;
 	private GameObject playerCamera;
 	private GameObject player;
@@ -21,7 +22,8 @@ public class GameManager : MonoBehaviour {
 	public bool controllerBuilder = false;
 	
 	void OnLevelWasLoaded(int level) {
-		tower = GameObject.Find("Tower").GetComponent<TowerManager>();
+		tower = GameObject.Find("Tower");
+		towerComp = tower.GetComponent<TowerManager>();
 		// TODO: DON'T HARDCODE YOUR NAMES NICK YOU MORON
 		camera = GameObject.Find("IsoCamera");
 		playerCamera = GameObject.Find("Main Camera");
@@ -71,8 +73,14 @@ public class GameManager : MonoBehaviour {
 	
 	public TowerManager getTower()
 	{
+		return towerComp;
+	}
+
+	public GameObject getTowerObject()
+	{
 		return tower;
 	}
+
 	public GameObject getBuilderCamera()
 	{
 		return camera;

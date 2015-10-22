@@ -62,14 +62,17 @@ public class PauseMenu : MonoBehaviour {
 				
 			}
 			
-			//Toggles between displaying the keys
-			if (GUI.Toggle (new Rect (Screen.currentResolution.width / 2, (Screen.currentResolution.height / 2), 150, 35), help,"Help","Button")!= help) {
-				audio.PlayOneShot(buttonClick);
-				help = !help;
-				if (help){
-					Debug.Log("Working");
-				}
+			// Make the Quit button.
+			if (GUI.Button (new Rect (Screen.currentResolution.width - 300, 600, 150, 35), "Quit") || GamePad.GetButtonDown(GamePad.Button.B, GamePad.Index.One)) {
+				// quits game
+				q1 = true;
 			}
+			
+			// Resumes the game when paused
+			if (GUI.Toggle (new Rect (Screen.currentResolution.width - 300, 400, 150, 35), r1,"Resume","Button")!= r1 || GamePad.GetButtonDown(GamePad.Button.X, GamePad.Index.One)) {
+				r1 = !r1;
+			}
+
 			if (help1){
 				//Debug.Log("Working");
 				GUI.Label(new Rect (100, 100, 150, 35), "Blobbi Moves");

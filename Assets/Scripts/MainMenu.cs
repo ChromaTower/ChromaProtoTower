@@ -35,7 +35,7 @@ public class MainMenu : MonoBehaviour
 		file = "C:/Users/Public/Documents/ChromaTower/HighScores.txt";
 
 		
-		ReadScores ();
+		//ReadScores ();
 
 		score1.text = "1) " + scores[0].ToString() + "m";
 		score2.text = "2) " + scores[1].ToString() + "m";

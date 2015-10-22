@@ -139,19 +139,6 @@ public class DropperCamera : MonoBehaviour {
 	{
 		TowerManager tower = GameManager.instance.getTower ();
 
-		// TODO: Get rid of this soon
-		if (!GameManager.instance.controllerBuilder)
-		{
-			if (Input.mousePosition.y > (Screen.height - 100))
-			{
-				camMouseY += Time.deltaTime * ((Input.mousePosition.y - (Screen.height - 100))/100) ;
-			} else if (Input.mousePosition.y < 100)
-			{
-				camMouseY -= Time.deltaTime * ((100 - Input.mousePosition.y)/100) ;
-			}
-		} 
-
-
 		if (GamePad.GetButtonUp (GamePad.Button.X, GamePad.Index.Two))
 		{
 			tower.undoBlock ();
@@ -165,6 +152,7 @@ public class DropperCamera : MonoBehaviour {
 				// Create a new block
 				blockPlace = tower.createBlock();
 				blockPlace.transform.position = lastBlockPos;
+				blockPlace.GetComponent<Block>().preview();
 			}
 		} else {
 			// Reduce the time
@@ -212,7 +200,7 @@ public class DropperCamera : MonoBehaviour {
 							camZ += dPadY;
 						}
 
-						camY += GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.Two).y * Time.deltaTime * 15f;
+						//camY += GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.Two).y * Time.deltaTime * 15f;
 
 
 
@@ -236,27 +224,6 @@ public class DropperCamera : MonoBehaviour {
 							camZ += tower.snap;
 						}
 				}
-				else
-				{
-						if (Input.GetMouseButtonDown(1))
-						{
-							blockPlace.transform.RotateAround(blockPlace.transform.position, Vector3.up, snapAngle);
-						}
-
-						// Line tracing for "previews"
-						Plane plane = new Plane(Vector3.up, 0);
-
-						float distance;
-						Ray ray = GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
-						if (plane.Raycast(ray, out distance))
-						{
-							Vector3 pt = ray.GetPoint(distance);
-							// TODO: Predicting the place
-							blockPlace.transform.position = new Vector3(Mathf.Clamp(pt.x, tower.transform.position.x - (tower.mapXSize/2), tower.transform.position.x + (tower.mapXSize/2)),
-							                                            Mathf.Clamp(pt.x, tower.transform.position.y - (tower.mapYSize/2), tower.transform.position.y + (tower.mapYSize/2)),
-							                                            Mathf.Clamp(pt.z, tower.transform.position.z - (tower.mapZSize/2), tower.transform.position.z + (tower.mapZSize/2)));
-						}
-				}
 
 			if (blockWaiting <= 0f)
 			{
@@ -278,10 +245,18 @@ public class DropperCamera : MonoBehaviour {
 
 	}
 
+	void cameraUpdate()
+	{
+		//TODO: Figure out why Z rotation is applied below 50 degrees on X
+		transform.RotateAround(GameManager.instance.getTowerObject().transform.position, Vector3.up, GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.Two).x * Time.deltaTime * 30f);
+		transform.RotateAround(GameManager.instance.getTowerObject().transform.position, transform.right, GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.Two).y * Time.deltaTime * 30f);
+	}
+
 	// Update is called once per frame
 	void Update () {
 		VerticalMoveUpdate ();
 		rotateUpdate();
 		mouseUpdate();
+		cameraUpdate();
 	}
 }

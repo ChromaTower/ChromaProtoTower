@@ -7,6 +7,9 @@ public class UIManager : MonoBehaviour {
 	private GameManager manager;
 	public Text height;
 	public Text shadowheight;
+	public Text heightTower;
+	public Text blocksLeft;
+
 	public Text reset;
 	public Text score;
 	private string file;
@@ -22,12 +25,16 @@ public class UIManager : MonoBehaviour {
 		//TODO: check if still exists
 		float pos = Mathf.Round (((manager.getPlayer().transform.position.y + 0.7f) )* 5)/5;
 		height.text = (pos / 2) + "m";	
+		heightTower.text = height.text;
 
 		//TODO: Kill magic values
-		float pos2 = Mathf.Round(((manager.getShadow().transform.position.y + GameManager.instance.getShadow().transform.localScale.y - 3.6f))* 5)/5;
+		float pos2 = Mathf.Round(((GameManager.instance.getShadow().transform.position.y + (GameManager.instance.getShadow().transform.localScale.y / 2) + 0.7f))* 5)/5;
 		shadowheight.text = (pos2 / 2) + "m";
 
-		ReadScores ((pos / 2));
+		blocksLeft.text = (GameManager.instance.getTower ().blockEnergy) + " available";	
+
+
+		//ReadScores ((pos / 2));
 
 		if (manager.getPlayer().GetComponent<PlayerMove>().alive == false)
 		{
