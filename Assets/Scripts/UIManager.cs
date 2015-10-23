@@ -10,14 +10,28 @@ public class UIManager : MonoBehaviour {
 	public Text heightTower;
 	public Text blocksLeft;
 
+	public RawImage bckLeft1;
+	public RawImage bckLeft2;
+	public RawImage bckLeft3;
+	public RawImage bckLeft4;
+	public RawImage bckLeft5;
+	public RawImage bckLeft6;
+	public RawImage bckLeft7;
+	public RawImage bckLeft8;
+	public RawImage bckLeft9;
+	public RawImage bckLeft10;
+
 	public Text reset;
 	public Text score;
 	private string file;
+	public int leftoverBlocks;
 
 	// Use this for initialization
 	void Start () {
 		manager = GameObject.Find("GameManager").GetComponent<GameManager>();
 		file = "C:/Users/Public/Documents/ChromaTower/HighScores.txt";
+		//leftoverBlocks = GameManager.instance.getTower ().blockEnergy;
+		leftoverBlocks = 9;
 	}
 	
 	// Update is called once per frame
@@ -31,10 +45,10 @@ public class UIManager : MonoBehaviour {
 		float pos2 = Mathf.Round(((GameManager.instance.getShadow().transform.position.y + (GameManager.instance.getShadow().transform.localScale.y / 2) + 0.7f))* 5)/5;
 		shadowheight.text = (pos2 / 2) + "m";
 
-		blocksLeft.text = (GameManager.instance.getTower ().blockEnergy) + " available";	
+		blocksLeft.text = leftoverBlocks + " available";	
 
 
-		//ReadScores ((pos / 2));
+		ReadScores ((pos / 2));
 
 		if (manager.getPlayer().GetComponent<PlayerMove>().alive == false)
 		{
@@ -42,6 +56,12 @@ public class UIManager : MonoBehaviour {
 		} else 
 		{
 			reset.color = new Color(1f, 1f, 1f, 0f);
+		}
+
+		if(leftoverBlocks == 9){
+			bckLeft1.enabled = false;
+			bckLeft2.enabled = false;
+			bckLeft3.enabled = false;
 		}
 	}
 

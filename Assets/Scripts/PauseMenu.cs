@@ -56,23 +56,17 @@ public class PauseMenu : MonoBehaviour {
 			}
 			
 			// Resumes the game when paused
-			if (GUI.Button (new Rect (Screen.currentResolution.width / 2, (Screen.currentResolution.height / 2) - 100, 150, 35), "Back")) {
+			if (GUI.Button (new Rect (330, 400, 150, 35), "Back")) {
 				audio.PlayOneShot(buttonClick);
 				paused = togglePause();
 				
 			}
 			
-			// Make the Quit button.
-			if (GUI.Button (new Rect (Screen.currentResolution.width - 300, 600, 150, 35), "Quit") || GamePad.GetButtonDown(GamePad.Button.B, GamePad.Index.One)) {
-				// quits game
-				q1 = true;
+			//Toggles between displaying the keys
+			if (GUI.Toggle (new Rect (330, 500, 150, 35), help1,"Help","Button")!= help1) {
+				audio.PlayOneShot(buttonClick);
+				help1 = !help1;
 			}
-			
-			// Resumes the game when paused
-			if (GUI.Toggle (new Rect (Screen.currentResolution.width - 300, 400, 150, 35), r1,"Resume","Button")!= r1 || GamePad.GetButtonDown(GamePad.Button.X, GamePad.Index.One)) {
-				r1 = !r1;
-			}
-
 			if (help1){
 				//Debug.Log("Working");
 				GUI.Label(new Rect (100, 100, 150, 35), "Blobbi Moves");
@@ -84,18 +78,18 @@ public class PauseMenu : MonoBehaviour {
 			}
 			
 			// Make the Quit button.
-			if (GUI.Button (new Rect (Screen.currentResolution.width - 300, 600, 150, 35), "Quit") || GamePad.GetButtonDown(GamePad.Button.B, GamePad.Index.Two)) {
+			if (GUI.Button (new Rect (Screen.currentResolution.width - 500, 600, 150, 35), "Quit") || GamePad.GetButtonDown(GamePad.Button.B, GamePad.Index.Two)) {
 				// quits game
 				q2 = true;
 			}
 			
 			// Resumes the game when paused
-			if (GUI.Toggle (new Rect (Screen.currentResolution.width - 300, 400, 150, 35), r2,"Resume","Button")!= r2 || GamePad.GetButtonDown(GamePad.Button.X, GamePad.Index.Two)) {
+			if (GUI.Toggle (new Rect (Screen.currentResolution.width - 500, 400, 150, 35), r2,"Resume","Button")!= r2 || GamePad.GetButtonDown(GamePad.Button.X, GamePad.Index.Two)) {
 				r2 = !r2;
 			}
 			
 			//Toggles between displaying the keys
-			if (GUI.Toggle (new Rect (Screen.currentResolution.width - 300, 500, 150, 35), help2,"Help","Button")!= help2 || GamePad.GetButtonDown(GamePad.Button.Y, GamePad.Index.Two)) {
+			if (GUI.Toggle (new Rect (Screen.currentResolution.width - 500, 500, 150, 35), help2,"Help","Button")!= help2 || GamePad.GetButtonDown(GamePad.Button.Y, GamePad.Index.Two)) {
 				help2 = !help2;
 			}
 			

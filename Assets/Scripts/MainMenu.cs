@@ -33,10 +33,10 @@ public class MainMenu : MonoBehaviour
 		scores = new List<float>();
 		path = "C:/Users/Public/Documents/ChromaTower";
 		file = "C:/Users/Public/Documents/ChromaTower/HighScores.txt";
-
 		
-		//ReadScores ();
-
+		
+		ReadScores ();
+		
 		score1.text = "1) " + scores[0].ToString() + "m";
 		score2.text = "2) " + scores[1].ToString() + "m";
 		score3.text = "3) " + scores[2].ToString() + "m";
@@ -70,8 +70,8 @@ public class MainMenu : MonoBehaviour
 	{
 		Application.LoadLevel (2);	
 	}
-
-
+	
+	
 	public void ReadScores(){
 		using(StreamReader sr = new StreamReader(file))
 		{
@@ -81,7 +81,7 @@ public class MainMenu : MonoBehaviour
 				line = sr.ReadLine();
 				scores.Add(float.Parse(line));
 			}
-
+			
 		}
 	}
 	
