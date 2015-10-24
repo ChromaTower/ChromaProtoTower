@@ -4,7 +4,9 @@ using UnityEngine.EventSystems;
 using GamepadInput;
 
 public class PauseMenu : MonoBehaviour {
-	
+
+	private GameManager manager;
+	private PauseMenu menu;
 	bool paused = false;
 	bool p1 = false;
 	bool p2 = false;
@@ -25,6 +27,8 @@ public class PauseMenu : MonoBehaviour {
 	/// </summary>
 	void Start()
 	{
+		manager = GameObject.Find("GameManager").GetComponent<GameManager>();
+		menu = GetComponent<PauseMenu>();
 		Time.timeScale = 1f;
 		getClick = GameObject.Find("IsoCamera").GetComponent<DropperCamera>();
 		audio = GetComponent<AudioSource> ();
@@ -39,6 +43,10 @@ public class PauseMenu : MonoBehaviour {
 		if (Input.GetKeyDown (KeyCode.Escape) || GamePad.GetButtonDown(GamePad.Button.Start, GamePad.Index.One) || GamePad.GetButtonDown(GamePad.Button.Start, GamePad.Index.Two)) {
 			paused = togglePause ();
 		} 
+
+		if(manager.getPlayer().GetComponent<PlayerMove>().alive == false){
+			menu.enabled = false;
+		}
 	}
 	
 	void OnGUI()
@@ -49,7 +57,7 @@ public class PauseMenu : MonoBehaviour {
 			GUI.Box ( new Rect (0, 0, (Screen.currentResolution.width/2), (Screen.currentResolution.height)), "Pause Menu Player One");
 			GUI.Box ( new Rect ((Screen.currentResolution.width/2), 0, (Screen.currentResolution.width/2), (Screen.currentResolution.height)), "Pause Menu Player Two");
 			// Make the Quit button.
-			if (GUI.Button (new Rect (330, 600, 150, 35), "Quit" )|| GamePad.GetButtonDown(GamePad.Button.B, GamePad.Index.One)) {
+			if (GUI.Button (new Rect (330, 600, 150, 35), "Quit" )) {
 				// quits game
 				audio.PlayOneShot(buttonClick);
 				Application.Quit ();
@@ -67,8 +75,8 @@ public class PauseMenu : MonoBehaviour {
 				audio.PlayOneShot(buttonClick);
 				help1 = !help1;
 			}
+			// Help menu for Blobi
 			if (help1){
-				//Debug.Log("Working");
 				GUI.Label(new Rect (100, 100, 150, 35), "Blobbi Moves");
 				GUI.Label(new Rect (100, 150, 150, 35), "Forward:  W");
 				GUI.Label(new Rect (100, 200, 150, 35), "Backward: S");
@@ -92,7 +100,8 @@ public class PauseMenu : MonoBehaviour {
 			if (GUI.Toggle (new Rect (Screen.currentResolution.width - 500, 500, 150, 35), help2,"Help","Button")!= help2 || GamePad.GetButtonDown(GamePad.Button.Y, GamePad.Index.Two)) {
 				help2 = !help2;
 			}
-			
+
+			//  Help menu for the builder
 			if (help2){
 				GUI.Label(new Rect (Screen.currentResolution.width - 300, 100, 300, 35), "Builders Moves");
 				GUI.Label(new Rect (Screen.currentResolution.width - 300, 150, 300, 35), "Add Block:\tHold Left Mouse");
@@ -102,15 +111,17 @@ public class PauseMenu : MonoBehaviour {
 				GUI.Label(new Rect (Screen.currentResolution.width - 300, 350, 300, 35), "Move Screen Up:\tMove Mouse Up");
 				GUI.Label(new Rect (Screen.currentResolution.width - 300, 400, 300, 35), "Move Screen Down:\tMove Mouse Down");
 			}
-			
+			// if both players want to resume
 			if(r1 && r2){
 				paused = togglePause();
 			}
+			// if both Players want to quit
 			if (q1 || q2){
 				quit = true;
 			}
 		}
 		
+
 		if(quit){
 			paused = false;
 			

@@ -7,11 +7,15 @@ public class StartUp : MonoBehaviour {
 	
 	private string path;
 	private string file;
+	private string file2;
+	private string file3;
 	private List<float> scores; 
 	// Use this for initialization
 	void Start () {
 		path = "C:/Users/Public/Documents/ChromaTower";
 		file = "C:/Users/Public/Documents/ChromaTower/HighScores.txt";
+		file2 = "C:/Users/Public/Documents/ChromaTower/blobbi.txt";
+		file3 = "C:/Users/Public/Documents/ChromaTower/builder.txt";
 		scores = new List<float>();
 		try
 		{
@@ -58,6 +62,38 @@ public class StartUp : MonoBehaviour {
 			}
 			
 		}
+		using(StreamWriter sw = new StreamWriter(file2))
+		{	
+			try{
+				sw.WriteLine("Blobi");
+				sw.WriteLine("Blobi");
+				sw.WriteLine("Blobi");
+				sw.WriteLine("Blobi");
+				sw.WriteLine("Blobi");
+				sw.Close();
+			}
+			catch (IOException ex)
+			{
+				Debug.Log(ex.Message);
+			}
+			
+		}
+		using(StreamWriter sw = new StreamWriter(file3))
+		{	
+			try{
+				sw.WriteLine("Builder");
+				sw.WriteLine("Builder");
+				sw.WriteLine("Builder");
+				sw.WriteLine("Builder");
+				sw.WriteLine("Builder");
+				sw.Close();
+			}
+			catch (IOException ex)
+			{
+				Debug.Log(ex.Message);
+			}
+			
+		}
 	}
 	
 	public bool ReadScores(){
@@ -84,6 +120,15 @@ public class StartUp : MonoBehaviour {
 	public void CreateFile(){
 		using (FileStream fs =  File.Create(file))
 		{
+			Debug.Log("Working");
+		}
+		using (FileStream fs =  File.Create("blobi.txt"))
+		{
+			Debug.Log("Working");
+		}
+		using (FileStream fs =  File.Create("builder.txt"))
+		{
+			Debug.Log("Working");
 		}
 	}
 	
