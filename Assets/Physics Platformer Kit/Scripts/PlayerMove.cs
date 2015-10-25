@@ -17,7 +17,11 @@ public class PlayerMove : MonoBehaviour
 	public AudioClip jumpSound;					//play when jumping
 	public AudioClip landSound;					//play when landing on ground
 	public AudioClip moveSound;					//play when moving on ground
-	
+
+	public GameObject arrowPrefab;
+	private GameObject arrow;
+	private bool arrowing = false;
+
 	//movement
 	public float accel = 70f;					//acceleration/deceleration in air or on the ground
 	public float airAccel = 18f;			
@@ -113,7 +117,7 @@ public class PlayerMove : MonoBehaviour
 	{	
 		//handle jumping
 		JumpCalculations ();
-		HomingChecker();
+		checkArrow ();
 
 		//adjust movement values if we're in the air or on the ground
 		curAccel = (grounded) ? accel : airAccel;
@@ -129,8 +133,15 @@ public class PlayerMove : MonoBehaviour
 		float h, v;
 		if (GameManager.instance.controllerBlobbi)
 		{
-			h = GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.One).x;
-			v = GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.One).y;
+			if (arrowing == true)
+			{
+				h = 0;
+				v = 0;
+			} else {
+				h = GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.One).x;
+				v = GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.One).y;
+			}
+			
 			float dist = Mathf.Sqrt((h * h) + (v * v));
 			float angle = Mathf.Atan2(v, h);
 
@@ -277,10 +288,13 @@ public class PlayerMove : MonoBehaviour
 
 		if (!grounded)
 		{
-			if (GameManager.instance.controllerBlobbi && GamePad.GetButtonDown(GamePad.Button.A, GamePad.Index.One)
-			    || !GameManager.instance.controllerBlobbi && Input.GetButtonDown ("Jump"))
+			if (arrowing == false)
 			{
-				airPressTime = Time.time;
+				if (GameManager.instance.controllerBlobbi && GamePad.GetButtonDown(GamePad.Button.A, GamePad.Index.One)
+				    || !GameManager.instance.controllerBlobbi && Input.GetButtonDown ("Jump"))
+				{
+					airPressTime = Time.time;
+				}
 			}
 		}
 			
@@ -288,12 +302,15 @@ public class PlayerMove : MonoBehaviour
 		//if were on ground within slope limit
 		if (grounded && slope < slopeLimit)
 		{
+			if (arrowing == false)
+			{
 			//and we press jump, or we pressed jump justt before hitting the ground
-			if ((GamePad.GetButtonDown(GamePad.Button.A, GamePad.Index.One) && GameManager.instance.controllerBlobbi) 
-			    || (!GameManager.instance.controllerBlobbi && Input.GetButtonDown ("Jump"))
-			    || (airPressTime + jumpLeniancy > Time.time))
-			{	
-				Jump (jumpForce);
+				if ((GamePad.GetButtonDown(GamePad.Button.A, GamePad.Index.One) && GameManager.instance.controllerBlobbi) 
+				    || (!GameManager.instance.controllerBlobbi && Input.GetButtonDown ("Jump"))
+				    || (airPressTime + jumpLeniancy > Time.time))
+				{	
+					Jump (jumpForce);
+				}
 			}
 		}
 	}
@@ -312,8 +329,46 @@ public class PlayerMove : MonoBehaviour
 		airPressTime = 0f;
 	}
 
-	public void HomingChecker()
+	public void checkArrow()
 	{
-		// TODO: Press B button to home in on nearest block
+		GamepadState state = GamePad.GetState(GamePad.Index.One);
+
+		if ((state.LeftStick) && GameManager.instance.controllerBlobbi)
+		{
+			if (arrowing == false)
+			{
+				arrow = (GameObject)Object.Instantiate(arrowPrefab, transform.position, Quaternion.identity);
+				//arrow.GetComponent<Renderer>().material = GameManager.instance.getBlobbi().GetComponent<Renderer>().material;
+				arrow.transform.position = transform.position + new Vector3(0f, 0.8f, 0f);
+			}
+			arrowing = true;
+
+			arrow.transform.localScale = new Vector3(arrow.transform.localScale.x, arrow.transform.localScale.y, arrow.transform.localScale.z);
+			GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().targetOffset = new Vector3(0f, 0.1f, 0f);
+			GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().target = arrow.transform;
+			GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().closeUp = true;
+		}
+
+		if ((GamePad.GetButtonUp(GamePad.Button.LeftStick, GamePad.Index.One) && GameManager.instance.controllerBlobbi))
+		{
+			arrowing = false;
+			Destroy (arrow);
+			GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().targetOffset = new Vector3(0f, 2f, -7f);
+			GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().target = transform;
+			GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().closeUp = false;
+		}
+
+		if (!grounded)
+		{
+			if (arrowing == true)
+			{
+				Destroy (arrow);
+				GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().targetOffset = new Vector3(0f, 2f, -7f);
+				GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().target = transform;
+				GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().closeUp = false;
+				arrowing = false;
+			}
+		}
 	}
+
 }

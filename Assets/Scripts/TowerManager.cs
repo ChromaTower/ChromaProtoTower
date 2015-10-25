@@ -6,6 +6,7 @@ public class TowerManager : MonoBehaviour {
 
 	// The blocks used - prefab
 	public GameObject pickup;
+	private List<GameObject> pickups = new List<GameObject>();	
 
 	public GameObject block;
 	private List<GameObject> blocks = new List<GameObject>();	
@@ -130,6 +131,8 @@ public class TowerManager : MonoBehaviour {
 			            											  minY + (pos.y * snap),
 			            											  minZ + (pos.z * snap)),
 								  			            Quaternion.identity);
+
+			pickups.Add (p);
 
 		}
 	}

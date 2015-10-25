@@ -117,8 +117,15 @@ public class BlobbiManager : MonoBehaviour {
 			col = true;
 		}
 		m_JellyMesh.SetPosition(transform.parent.position, false);
-		//m_JellyMesh.transform.rotation = transform.parent.rotation;
+
 		m_JellyMesh.SetVelocity (transform.parent.GetComponent<Rigidbody>().velocity);
+
+		if (GameManager.instance.getPlayerCamera ().GetComponent<CameraFollow>().closeUp)
+		{
+			print ("asdf");
+			transform.parent.rotation = GameManager.instance.getPlayerCamera().transform.rotation;
+			m_JellyMesh.transform.rotation = transform.parent.rotation;
+		}
 	}
 
 }

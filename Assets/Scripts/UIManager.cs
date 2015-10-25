@@ -28,7 +28,7 @@ public class UIManager : MonoBehaviour {
 		heightTower.text = height.text;
 
 		//TODO: Kill magic values
-		float pos2 = Mathf.Round(((GameManager.instance.getShadow().transform.position.y + (GameManager.instance.getShadow().transform.localScale.y / 2) + 0.7f))* 5)/5;
+		float pos2 = Mathf.Round(((GameManager.instance.getShadow().transform.position.y + + 0.7f))* 5)/5;
 		shadowheight.text = (pos2 / 2) + "m";
 
 		blocksLeft.text = (GameManager.instance.getTower ().blockEnergy) + " available";	

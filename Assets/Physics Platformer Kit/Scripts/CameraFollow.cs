@@ -19,6 +19,8 @@ public class CameraFollow : MonoBehaviour
 	private Vector3 posPrev, posPrev2;
 	private Quaternion rotPrev, rotPrev2;
 	private bool notColliding = true;
+
+	public bool closeUp = false;
 	
 	//setup objects
 	void Awake()
@@ -55,28 +57,12 @@ public class CameraFollow : MonoBehaviour
 			transform.LookAt(target.position);
 
 
-		GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-		GetComponent<Rigidbody>().velocity = Vector3.zero;
-	}
-
-	void LateUpdate()
-	{
-		/*
-		if (notColliding)
+		if (closeUp)
 		{
-			posPrev = transform.position;
-			rotPrev = transform.rotation;
-		} else {
-			transform.position = posPrev;
-			transform.rotation = rotPrev;
-			GetComponent<Rigidbody>().position = posPrev;
-			GetComponent<Rigidbody>().rotation = rotPrev;
-		}*/
-
-		transform.position = GetComponent<Rigidbody>().position;
-		transform.rotation = GetComponent<Rigidbody>().rotation;
+			GameManager.instance.getPlayer ().transform.rotation = transform.rotation;
+		}
 	}
-
+	
 	void OnCollisionEnter(Collision c)
 	{
 		//notColliding = false;
@@ -125,9 +111,10 @@ public class CameraFollow : MonoBehaviour
 				if (GameManager.instance.controllerBlobbi)
 				{
 					float axisX = GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.One).x * inputRotationSpeed * Time.deltaTime;
-					followTarget.RotateAround (target.position,Vector3.up, axisX);
 					float axisY = GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.One).y * inputRotationSpeed * Time.deltaTime;
-					followTarget.RotateAround (target.position, transform.right, -axisY);
+
+						followTarget.RotateAround (target.position, Vector3.up, axisX);
+						followTarget.RotateAround (target.position, transform.right, -axisY);
 				}
 				else
 				{

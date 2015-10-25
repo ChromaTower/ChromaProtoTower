@@ -8,24 +8,27 @@ public class ShadowManager : MonoBehaviour {
 	// The rate the goo rises, in units per second
 	public float riseRate = 0.5f;
 
+	private Material mat;
+
 	// Use this for initialization
 	void Start () {
 		//GameObject o = GameObject.Find("Floor");
 		//transform.localScale = new Vector3(o.transform.lossyScale.x, 1f, o.transform.lossyScale.z);
 		startY = transform.position.y;
 		startScale = transform.localScale;
+
+		mat = GetComponent<Renderer>().material;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		// Slowly rise
-		transform.localScale += new Vector3(0f, riseRate * Time.deltaTime, 0f);
-		transform.position = new Vector3(transform.position.x, startY + (transform.localScale.y/2), transform.position.z);
+		transform.position += new Vector3(0f, riseRate * Time.deltaTime, 0f);
+		mat.mainTextureOffset = new Vector2(mat.mainTextureOffset.x + 0.00001f, mat.mainTextureOffset.y + 0.00001f);
 	}
 
 	public void reset()
 	{
-		transform.localScale = startScale;
 		transform.position = new Vector3(transform.position.x, startY, transform.position.z);
 	}
 

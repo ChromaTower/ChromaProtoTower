@@ -7,6 +7,8 @@ public class DropperCamera : MonoBehaviour {
 	// Used for placing new blocks on screen
 	private GameObject blockPlace = null;
 	private Vector3 lastBlockPos = Vector3.zero;
+	int previousRotates = 0;
+	int currentRotates = 0;
 
 	// The increments the camera is snapped to when rotating
 	// Not advised that you change this, but if you want to...
@@ -41,6 +43,9 @@ public class DropperCamera : MonoBehaviour {
 
 
 	private float maxDistAboveTower;
+
+	private float controllerInertia = 0f;
+
 
 	// Use this for initialization
 	void Start () {
@@ -78,11 +83,26 @@ public class DropperCamera : MonoBehaviour {
 	{
 		// Prevent camera from leaving boundaries
 		TowerManager tower = GameManager.instance.getTower();
-		transform.position = new Vector3(0f, (Mathf.Round(camY/ tower.snap) * tower.snap) + maxDistAboveTower, 0f);
 
-		if (transform.position.y < tower.minY)
+		GamepadState state = GamePad.GetState(GamePad.Index.Two);
+
+
+		int scroll = 0;
+		
+		if (GameManager.instance.controllerBuilder)
 		{
-			transform.position = new Vector3(transform.position.x, tower.minY, transform.position.z);
+			int scroll1 = GamePad.GetButtonUp (GamePad.Button.RightShoulder, GamePad.Index.Two) ? 1 : 0;
+			int scroll2 = GamePad.GetButtonUp (GamePad.Button.LeftShoulder, GamePad.Index.Two) ? 1 : 0;
+			scroll = (scroll1 - scroll2);
+		}
+
+		float yMovement = scroll * 3f;
+		//Debug.LogWarning(yMovement);
+		transform.position = new Vector3(transform.position.x, transform.position.y + yMovement, transform.position.z);
+
+		if (transform.position.y < GameManager.instance.getShadow().transform.position.y + 3f)
+		{
+			transform.position = new Vector3(transform.position.x, GameManager.instance.getShadow().transform.position.y + 3f, transform.position.z);
 		} else if (transform.position.y > tower.getHeight() + maxDistAboveTower) {
 			transform.position = new Vector3(transform.position.x, tower.getHeight() + maxDistAboveTower, transform.position.z);
 		}
@@ -90,7 +110,7 @@ public class DropperCamera : MonoBehaviour {
 
 		GameObject grid = GameManager.instance.getTower().previewGrid;
 		// TODO: Change the magic values
-		//grid.transform.position = new Vector3(grid.transform.position.x, ((Mathf.Round (transform.position.y / tower.snap) - 5f) * tower.snap), grid.transform.position.z);
+		grid.transform.position = new Vector3(grid.transform.position.x, ((Mathf.Round (transform.position.y / tower.snap) - 5f) * tower.snap), grid.transform.position.z);
 	}
 
 	void rotateUpdate()
@@ -152,7 +172,10 @@ public class DropperCamera : MonoBehaviour {
 				// Create a new block
 				blockPlace = tower.createBlock();
 				blockPlace.transform.position = lastBlockPos;
+				//Debug.LogWarning(lastBlockRot);
 				blockPlace.GetComponent<Block>().preview();
+
+
 			}
 		} else {
 			// Reduce the time
@@ -165,40 +188,45 @@ public class DropperCamera : MonoBehaviour {
 						if (GamePad.GetButtonUp(GamePad.Button.B, GamePad.Index.Two))
 						{
 							blockPlace.transform.RotateAround(blockPlace.transform.position, Vector3.up, snapAngle);
+							currentRotates += 1;
 						}
+
+				if (previousRotates > 0)
+				{
+					for (int i = 0; i <= previousRotates - 1; i++)
+					{
+						Debug.LogWarning("rotating");
+						blockPlace.transform.RotateAround(blockPlace.transform.position, Vector3.up, snapAngle);
+					}
+					previousRotates = 0;
+				}
 
 						float leftStickX = GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.Two).x * Time.deltaTime * gridMoveRate;
 						float leftStickY = GamePad.GetAxis (GamePad.Axis.LeftStick, GamePad.Index.Two).y * Time.deltaTime * gridMoveRate;
 						float dPadX = GamePad.GetAxis (GamePad.Axis.Dpad, GamePad.Index.Two).x * Time.deltaTime * gridMoveRate;
 						float dPadY = GamePad.GetAxis (GamePad.Axis.Dpad, GamePad.Index.Two).y * Time.deltaTime * gridMoveRate;
 
-						// As the camera rotates, it has to be relative
-						if (transform.eulerAngles.y >= 270)
-						{
-							camX -= leftStickY;
-							camZ += leftStickX;
 
-							camX -= dPadY;
-							camZ += dPadX;
-						} else if (transform.eulerAngles.y >= 180) {
-							camX -= leftStickX;
-							camZ -= leftStickY;
 
-							camX -= dPadX;
-							camZ -= dPadY;
-						} else if (transform.eulerAngles.y >= 90) {
-							camX += leftStickY;
-							camZ -= leftStickX;
+				float controllerAngle = (Mathf.Atan2(leftStickY, leftStickX) * Mathf.Rad2Deg) - transform.eulerAngles.y;
+				float controllerMagnitude = (Mathf.Sqrt ((leftStickX * leftStickX) + (leftStickY * leftStickY))) * controllerInertia;
 
-							camX += dPadY;
-							camZ -= dPadX;
-						} else {
-							camX += leftStickX;
-							camZ += leftStickY;
+				if (controllerInertia > 10f)
+				{
+					controllerInertia = 10f;
+				} else {
+					controllerInertia += Mathf.Max(0, 1f - (controllerMagnitude * 10f));
+				}
+				
+				if (controllerInertia < 1f)
+				{
+					controllerInertia = 1f;
+				}
 
-							camX += dPadX;
-							camZ += dPadY;
-						}
+				//Debug.LogWarning(controllerInertia);
+
+				camX += Mathf.Cos(controllerAngle * Mathf.Deg2Rad) * 50 * Time.deltaTime * controllerMagnitude;
+				camZ += Mathf.Sin(controllerAngle * Mathf.Deg2Rad) * 50 * Time.deltaTime * controllerMagnitude;
 
 						//camY += GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.Two).y * Time.deltaTime * 15f;
 
@@ -209,19 +237,23 @@ public class DropperCamera : MonoBehaviour {
 						{
 							blockPlace.transform.position = new Vector3(b.x + tower.snap, b.y, b.z);
 							camX -= tower.snap;
+							controllerInertia = 1f;
 						} else if (camX < -tower.snap)
 						{
 							blockPlace.transform.position = new Vector3(b.x - tower.snap, b.y, b.z);
 							camX += tower.snap;
+							controllerInertia = 1f;
 						}
 						if (camZ > tower.snap)
 						{
 							blockPlace.transform.position = new Vector3(b.x, b.y, b.z + tower.snap);
 							camZ -= tower.snap;
+							controllerInertia = 0f;
 						} else if (camZ < -tower.snap)
 						{
 							blockPlace.transform.position = new Vector3(b.x, b.y, b.z - tower.snap);
 							camZ += tower.snap;
+							controllerInertia = 1f;
 						}
 				}
 
@@ -234,7 +266,7 @@ public class DropperCamera : MonoBehaviour {
 					// Wake up the block - time to dropPlace();
 					lastBlockPos = blockPlace.transform.position;
 					blockPlace.GetComponent<Block>().Drop();
-					
+					previousRotates = currentRotates % 4;
 					// Reset the timer so the player has to wait a bit before spawning another block
 					blockWaiting = blockWaitTime;
 					
@@ -248,15 +280,17 @@ public class DropperCamera : MonoBehaviour {
 	void cameraUpdate()
 	{
 		//TODO: Figure out why Z rotation is applied below 50 degrees on X
-		transform.RotateAround(GameManager.instance.getTowerObject().transform.position, Vector3.up, GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.Two).x * Time.deltaTime * 30f);
-		transform.RotateAround(GameManager.instance.getTowerObject().transform.position, transform.right, GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.Two).y * Time.deltaTime * 30f);
+		transform.RotateAround(GameManager.instance.getTowerObject().transform.position, Vector3.up, GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.Two).x * Time.deltaTime * 50f);
+		transform.RotateAround(GameManager.instance.getTowerObject().transform.position, transform.right, GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.Two).y * Time.deltaTime * 50f);
+
+		transform.rotation = Quaternion.Euler(Mathf.Clamp (transform.rotation.eulerAngles.x, 1f, 80f), transform.rotation.eulerAngles.y, Mathf.Clamp(transform.rotation.eulerAngles.z, -1f, 1f));
 	}
 
 	// Update is called once per frame
 	void Update () {
-		VerticalMoveUpdate ();
-		rotateUpdate();
+		//rotateUpdate();
 		mouseUpdate();
 		cameraUpdate();
+		VerticalMoveUpdate ();
 	}
 }

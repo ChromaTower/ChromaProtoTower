@@ -7,10 +7,12 @@ public class Block : MonoBehaviour {
 	private Rigidbody rb;
 	public Renderer re;
 	public Material mat;
+<<<<<<< HEAD
 	public Material matPreview;
-	public Material matPreview2;
+=======
 	public AudioClip blockLand;
 	public AudioClip blockTouch;
+>>>>>>> origin/David's_Branch
 
 	private float snap;
 	public bool snapping = true;
@@ -54,7 +56,7 @@ public class Block : MonoBehaviour {
 			cube.transform.parent = transform;
 			cube.transform.localScale = new Vector3(snap, snap, snap);
 			cube.transform.position = transform.position;
-			cube.GetComponent<Renderer>().material = matPreview2;
+			cube.GetComponent<Renderer>().material = mat;
 			cube.layer = 10;
 			//cube.AddComponent<Rigidbody>();
 			shape.Add(cube);
@@ -62,9 +64,9 @@ public class Block : MonoBehaviour {
 			GameObject cube2 = GameObject.CreatePrimitive(PrimitiveType.Plane);
 			cube2.transform.parent = transform;
 			cube2.transform.localScale = new Vector3(snap / 10, snap / 10, snap / 10);
-			cube2.transform.position = transform.position + new Vector3(0f, 0.01f, 0f);
+			cube2.transform.position = transform.position;
 			cube2.GetComponent<Renderer>().material = matPreview;
-			cube2.layer = 10;
+			cube2.layer = 0;
 			//cube.AddComponent<Rigidbody>();
 			previews.Add(cube2);
 		}
@@ -227,6 +229,7 @@ public class Block : MonoBehaviour {
 		activated = true;
 		rb.isKinematic = true;
 
+<<<<<<< HEAD
 		foreach (GameObject p in previews)
 		{
 			Destroy(p);
@@ -240,10 +243,11 @@ public class Block : MonoBehaviour {
 
 		previews = new List<GameObject>();
 
-
+=======
 		GetComponent<AudioSource> ().volume = 0.4f;
 		GetComponent<AudioSource> ().clip = blockLand;
 		GetComponent<AudioSource> ().Play ();
+>>>>>>> origin/David's_Branch
 	}
 
 	// Looks up the block list to find the lowest position a block will fall to
@@ -254,7 +258,7 @@ public class Block : MonoBehaviour {
 		//print (startPos);
 
 		// Start from the block's position and check downward
-		for (int yCheck = (int)result; yCheck >= Mathf.Max (0, (int)(Mathf.Ceil (GameManager.instance.getShadow().transform.position.y / snap))); yCheck--)
+		for (int yCheck = (int)result; yCheck >= 0; yCheck--)
 		{
 			Vector3 checking = new Vector3(startPos.x, yCheck, startPos.z);
 			if (tower.checkPos(checking) == true)
@@ -280,16 +284,32 @@ public class Block : MonoBehaviour {
 			}
 			if (collision.gameObject.tag == "Player")
 			{
+<<<<<<< HEAD
 				foreach(GameObject o in shape)
 				{
 					o.GetComponent<Renderer>().material.color = GameManager.instance.getBlobbi().GetComponent<BlobbiManager>().getColor ();
 				}
 				coloured = true;
 				colourTime = resetColourTime;
+=======
+				Rigidbody prb = collision.gameObject.GetComponent<Rigidbody>();
+
+				// TODO: Use floorchecks/loop through children
+				//if (prb.velocity.y < 0)
+				//{
+				/*
 				GetComponent<AudioSource>().volume = 1;
 				GetComponent<AudioSource>().clip = blockTouch;
 				GetComponent<AudioSource>().Play ();
-
+					*/
+					foreach(GameObject o in shape)
+					{
+						o.GetComponent<Renderer>().material.color = GameManager.instance.getBlobbi().GetComponent<BlobbiManager>().getColor ();
+					}
+					coloured = true;
+				colourTime = resetColourTime; // TODO: Standardise the goddamn spelling
+				//}
+>>>>>>> origin/David's_Branch
 			}
 
 		}
@@ -434,7 +454,7 @@ public class Block : MonoBehaviour {
 				for (int i = 0; i < 4; i++)
 				{
 					tower.previewGrid2.transform.position = new Vector3(tower.previewGrid.transform.position.x, (target.y * snap) - (snap/2), tower.previewGrid.transform.position.z);
-					previews[i].transform.position = new Vector3(shape[i].transform.position.x, tower.previewGrid2.transform.position.y + 0.01f, shape[i].transform.position.z);
+					previews[i].transform.position = new Vector3(shape[i].transform.position.x, tower.previewGrid2.transform.position.y, shape[i].transform.position.z);
 				}
 			}
 		}
