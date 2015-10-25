@@ -4,14 +4,18 @@ using System.IO;
 using System.Collections.Generic;
 
 public class StartUp : MonoBehaviour {
-
+	
 	private string path;
 	private string file;
+	private string file2;
+	private string file3;
 	private List<float> scores; 
 	// Use this for initialization
 	void Start () {
 		path = "C:/Users/Public/Documents/ChromaTower";
 		file = "C:/Users/Public/Documents/ChromaTower/HighScores.txt";
+		file2 = "C:/Users/Public/Documents/ChromaTower/blobbi.txt";
+		file3 = "C:/Users/Public/Documents/ChromaTower/builder.txt";
 		scores = new List<float>();
 		try
 		{
@@ -21,15 +25,15 @@ public class StartUp : MonoBehaviour {
 			}
 			
 			if(!File.Exists(file)){
-				File.Create(file);
+				CreateFile();
 			}
 		}
 		catch (IOException ex)
 		{
 			Debug.Log(ex.Message);
 		}
-
-		if(File.Exists(file) && scores.Count == 0){
+		
+		if(File.Exists(file) && ReadScores() == false){
 			SetUpHighScore();
 		}
 		ReadScores ();
@@ -38,28 +42,61 @@ public class StartUp : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+		
 	}
-
+	
 	public void SetUpHighScore(){
 		using(StreamWriter sw = new StreamWriter(file))
 		{	
 			try{
-			sw.WriteLine("5");
-			sw.WriteLine("4");
-			sw.WriteLine("3");
-			sw.WriteLine("2");
-			sw.WriteLine("1");
+				sw.WriteLine("5");
+				sw.WriteLine("4");
+				sw.WriteLine("3");
+				sw.WriteLine("2");
+				sw.WriteLine("1");
+				sw.Close();
 			}
 			catch (IOException ex)
 			{
 				Debug.Log(ex.Message);
 			}
-
+			
+		}
+		using(StreamWriter sw = new StreamWriter(file2))
+		{	
+			try{
+				sw.WriteLine("Blobi");
+				sw.WriteLine("Blobi");
+				sw.WriteLine("Blobi");
+				sw.WriteLine("Blobi");
+				sw.WriteLine("Blobi");
+				sw.Close();
+			}
+			catch (IOException ex)
+			{
+				Debug.Log(ex.Message);
+			}
+			
+		}
+		using(StreamWriter sw = new StreamWriter(file3))
+		{	
+			try{
+				sw.WriteLine("Builder");
+				sw.WriteLine("Builder");
+				sw.WriteLine("Builder");
+				sw.WriteLine("Builder");
+				sw.WriteLine("Builder");
+				sw.Close();
+			}
+			catch (IOException ex)
+			{
+				Debug.Log(ex.Message);
+			}
+			
 		}
 	}
-
-	public void ReadScores(){
+	
+	public bool ReadScores(){
 		using(StreamReader sr = new StreamReader(file))
 		{
 			int i = 0;
@@ -71,7 +108,28 @@ public class StartUp : MonoBehaviour {
 				Debug.Log(scores[i]);
 				i++;
 			}
+			
+			if(i == 5){
+				return true;
+			}
+			
+			return false;
 		}
 	}
-
+	
+	public void CreateFile(){
+		using (FileStream fs =  File.Create(file))
+		{
+			Debug.Log("Working");
+		}
+		using (FileStream fs =  File.Create("blobi.txt"))
+		{
+			Debug.Log("Working");
+		}
+		using (FileStream fs =  File.Create("builder.txt"))
+		{
+			Debug.Log("Working");
+		}
+	}
+	
 }
