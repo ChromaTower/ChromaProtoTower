@@ -37,8 +37,8 @@ public class GameManager : MonoBehaviour {
 		player = GameObject.Find("Player");
 		blobbi = GameObject.Find("Blobbi");
 		shadow = GameObject.Find("ShadowGoo");
-		blobbiIn = blobbiIn.GetComponent<InputField>();
-		builderIn = builderIn.GetComponent<InputField>();
+//		blobbiIn = blobbiIn.GetComponent<InputField>();
+//		builderIn = builderIn.GetComponent<InputField>();
 
 
 		// Ignore physical collisions between the blocks and the world
@@ -49,12 +49,12 @@ public class GameManager : MonoBehaviour {
 		scores = new List<string>();
 		blobbiSc = new List<string>();
 		builderSc = new List<string>();
-		file = "C:/Users/Public/Documents/ChromaTower/HighScores.txt";
-		file2 = "C:/Users/Public/Documents/ChromaTower/blobbi.txt";
-		file3 = "C:/Users/Public/Documents/ChromaTower/builder.txt";
-		ReadScores ();
+		//file = "C:/Users/Public/Documents/ChromaTower/HighScores.txt";
+		//file2 = "C:/Users/Public/Documents/ChromaTower/blobbi.txt";
+		//file3 = "C:/Users/Public/Documents/ChromaTower/builder.txt";
+		//ReadScores ();
 
-		Debug.Log(builderSc[3]);
+		//Debug.Log(builderSc[3]);
 	} 
 	
 	// Use this for initialization
@@ -109,8 +109,8 @@ public class GameManager : MonoBehaviour {
 	void RestartLevel()
 	{	
 		string line = (((getPlayer().transform.position.y + 0.7f) * 5/5)/ 2).ToString ("0.0");
-		CheckScores (float.Parse(line), blobbiIn.text, builderIn.text);
-		SaveHighScore ();
+		//CheckScores (float.Parse(line), blobbiIn.text, builderIn.text);
+		//SaveHighScore ();
 		Application.LoadLevel (Application.loadedLevelName);
 	}
 	

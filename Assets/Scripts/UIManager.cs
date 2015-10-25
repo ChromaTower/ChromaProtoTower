@@ -29,7 +29,7 @@ public class UIManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		manager = GameObject.Find("GameManager").GetComponent<GameManager>();
-		file = "C:/Users/Public/Documents/ChromaTower/HighScores.txt";
+		//file = "C:/Users/Public/Documents/ChromaTower/HighScores.txt";
 		leftoverBlocks = GameManager.instance.getTower ().blockEnergy;
 	}
 	
@@ -47,7 +47,7 @@ public class UIManager : MonoBehaviour {
 		blocksLeft.text = leftoverBlocks + " available";	
 
 
-		ReadScores ((pos / 2));
+		//ReadScores ((pos / 2));
 
 		if (manager.getPlayer ().GetComponent<PlayerMove> ().alive == false) {
 			reset.color = new Color (1f, 1f, 1f, 1f);
@@ -55,7 +55,7 @@ public class UIManager : MonoBehaviour {
 			reset.color = new Color (1f, 1f, 1f, 0f);
 		}
 
-		if (leftoverBlocks == 9) {
+		/*if (leftoverBlocks == 9) {
 			bckLeft1.enabled = false;
 		} else if (leftoverBlocks == 8) {
 			bckLeft2.enabled = false;
@@ -86,7 +86,7 @@ public class UIManager : MonoBehaviour {
 			bckLeft8.enabled = true;
 			bckLeft9.enabled = true;
 			bckLeft10.enabled = true;
-		}
+		}*/
 	}
 
 
