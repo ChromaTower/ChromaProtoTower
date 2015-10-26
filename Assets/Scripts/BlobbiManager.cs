@@ -7,6 +7,9 @@ public class BlobbiManager : MonoBehaviour {
 	private Renderer re;
 	private float hue, hueSpeed;
 	public bool alive = true;
+	private float hueMax;
+
+	private int hueSwitch = 1;
 
 	// Use this for initialization
 	void Start () {
@@ -23,22 +26,24 @@ public class BlobbiManager : MonoBehaviour {
 		{
 		// Allows for smooth colour changing
 		float vel = transform.parent.GetComponent<Rigidbody>().velocity.magnitude;
-		hueSpeed += (float)(vel/3.2f) * Time.deltaTime;
 
 		// primitive friction
-		hueSpeed *= 0;//0.985f;
+		hueSpeed *= 0.985f;
 
 		hue += hueSpeed * Time.deltaTime;
 
+			hueMax = GameManager.instance.getColorEngine().GetComponent<ColorManager>().hue;
+
 		// Value rollover
-		if (hue > 1f)
+		if (hue > hueMax)
 		{
-			hue -= 2f;
-		} else if (hue < -1f)
+				hueSwitch = -1;
+		} else if (hue < 0)
 		{
-			hue += 2f;
+				hueSwitch = 1;
 		}
 
+		hueSpeed += (float)(vel/3.2f) * Time.deltaTime * hueSwitch;
 		re.material.color = colorFromHSV(Mathf.Abs (hue), 0.8f, 0.9f);
 
 		}

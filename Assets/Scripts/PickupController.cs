@@ -8,10 +8,14 @@ public class PickupController : MonoBehaviour {
 	public int energyAmount = 15;
 	public AudioClip pickupSound;
 	private bool active = true;
+	public ParticleSystem ps;
+	public ParticleSystem ps2;
 
 	// Use this for initialization
 	void Start () {
-	
+		ps.startColor = GetComponent<Renderer>().material.color;
+		ps2.startColor = GetComponent<Renderer>().material.color;
+		GetComponent<Light>().color = GetComponent<Renderer>().material.color;
 	}
 	
 	// Update is called once per frame
@@ -32,13 +36,17 @@ public class PickupController : MonoBehaviour {
 				GetComponent<AudioSource>().volume = 1;
 				GetComponent<AudioSource>().clip = pickupSound;
 				GetComponent<AudioSource>().Play();
+
+				ps.Play ();
+
 				active = false;
 
 				GetComponent<Renderer>().enabled = false;
 				Destroy(gameObject, pickupSound.length);
 
 				// Make the goo rise quicker!
-				GameManager.instance.getShadow().GetComponent<ShadowManager>().riseRate += energyAmount/60f;
+				GameManager.instance.getShadow().GetComponent<ShadowManager>().riseRate += energyAmount/80f;
+				GameManager.instance.getColorEngine().GetComponent<ColorManager>().introduceColor();
 			}
 		}
 	}

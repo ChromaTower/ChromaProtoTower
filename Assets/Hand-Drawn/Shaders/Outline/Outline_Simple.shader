@@ -124,7 +124,7 @@ Shader "Hand-Drawn/Outline/Simple" {
 					float2 vOffset = TransformViewToProjection(norm.xy);
 					
 					// Apply the offset in clip space
-					o.pos.xy += vOffset * o.pos.z * _OutlineWidth;
+					o.pos.xy += vOffset * max(10, o.pos.z) * _OutlineWidth;
 
                	// If CONSTANT_THICKNESS is not defined, outline width is set in model space coordinates
                 #else

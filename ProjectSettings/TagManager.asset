@@ -16,6 +16,7 @@ TagManager:
   - Blob
   - Shadow
   - FreezeOnTouch
+  - Terrain
   layers:
   - Default
   - TransparentFX
@@ -30,7 +31,7 @@ TagManager:
   - BuilderOnly
   - BlobbiOnly
   - NoCollide
-  - 
+  - CameraCollide
   - 
   - 
   - 

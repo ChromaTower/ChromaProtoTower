@@ -19,9 +19,9 @@ EditorBuildSettings:
     path: Assets/Physics Platformer Kit/Scenes/3D Demo Scene.unity
   - enabled: 0
     path: Assets/Physics Platformer Kit/Scenes/Simple Demo.unity
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/StartUp.unity
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/MainMenu.unity
   - enabled: 1
     path: Assets/Scenes/test.unity

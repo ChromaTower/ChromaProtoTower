@@ -49,6 +49,8 @@ public class TowerManager : MonoBehaviour {
 
 	// How tall the tower is
 	private float height = 0;
+
+	private float prevHeight = 0f;
 	
 	// Use this for initialization
 	void Start () {
@@ -94,8 +96,11 @@ public class TowerManager : MonoBehaviour {
 		previewGrid2 = (GameObject)Object.Instantiate(previewGrid, transform.position - new Vector3(centreShiftX, snap/2, centreShiftZ), Quaternion.identity);
 		previewGrid2.transform.localScale = new Vector3(mapXSize / 10 , 1, mapZSize / 10);
 		previewGrid2.GetComponent<Renderer>().material.mainTextureScale = new Vector2(blockArraySizeX / 2, blockArraySizeZ / 2);
-		
-		generatePickups();
+		//previewGrid2.layer = 0;
+
+		generatePickup(1, new Color(1f, 0f, 0f));
+
+		//generatePickups();
 
 		/*for (int i = 0; i <= 3; i++)
 		{
@@ -120,21 +125,22 @@ public class TowerManager : MonoBehaviour {
 
 	}
 
-	private void generatePickups()
+	public void generatePickup(int height, Color col)
 	{
-		for (int i = pickupSpacing; i < blockArraySizeY; i += pickupSpacing)
-		{
-			Vector3 pos = new Vector3(Random.Range (0, blockArraySizeX), i, Random.Range (0, blockArraySizeZ));
+			prevHeight += height * snap;
+			Vector3 pos = new Vector3(Random.Range (0, blockArraySizeX), prevHeight, Random.Range (0, blockArraySizeZ));
 
 			GameObject p = (GameObject)Object.Instantiate(pickup, 
 			                                              new Vector3(minX + (pos.x * snap),
 			            											  minY + (pos.y * snap),
 			            											  minZ + (pos.z * snap)),
 								  			            Quaternion.identity);
+			
+		p.GetComponent<Renderer>().material.color = col;
 
 			pickups.Add (p);
 
-		}
+
 	}
 
 	public float getSnap()

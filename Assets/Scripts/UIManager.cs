@@ -21,11 +21,17 @@ public class UIManager : MonoBehaviour {
 	public RawImage bckLeft9;
 	public RawImage bckLeft10;
 
-	public Text reset;
+
 	public Text score;
 	private string file;
 	public int leftoverBlocks;
 
+	public Text deadMessage;
+	public Text deadMessage2;
+
+	public Text resetBlobbi;
+	public Text resetBuilder;
+	
 	// Use this for initialization
 	void Start () {
 		manager = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -36,23 +42,39 @@ public class UIManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		//TODO: check if still exists
-		float pos = Mathf.Round (((manager.getPlayer ().transform.position.y + 0.7f)) * 5) / 5;
+		float pos = Mathf.Max (0f, Mathf.Round (((manager.getPlayer ().transform.position.y + 0.7f)) * 5) / 5);
 		height.text = (pos / 2) + "m";	
 		heightTower.text = height.text;
 
 		//TODO: Kill magic values
-		float pos2 = Mathf.Round (((GameManager.instance.getShadow ().transform.position.y + (GameManager.instance.getShadow ().transform.localScale.y / 2) + 0.7f)) * 5) / 5;
+		float pos2 = Mathf.Max (0f, Mathf.Round (((GameManager.instance.getShadow ().transform.position.y + (GameManager.instance.getShadow ().transform.localScale.y / 2) + 0.7f)) * 5) / 5);
 		shadowheight.text = (pos2 / 2) + "m";
 
-		blocksLeft.text = leftoverBlocks + " available";	
+		leftoverBlocks = GameManager.instance.getTower ().blockEnergy;
+		blocksLeft.text = leftoverBlocks + " blocks available";	
 
+		if (GameManager.instance.blobbiRestart)
+		{
+			resetBlobbi.text = "Waiting on other player...";
+		}
+
+		if (GameManager.instance.builderRestart)
+		{
+			resetBuilder.text = "Waiting on other player...";
+		}
 
 		//ReadScores ((pos / 2));
 
 		if (manager.getPlayer ().GetComponent<PlayerMove> ().alive == false) {
-			reset.color = new Color (1f, 1f, 1f, 1f);
+			deadMessage.color = new Color (1f, 1f, 1f, 1f);
+			deadMessage2.color = new Color (1f, 1f, 1f, 1f);
+			resetBlobbi.color = new Color (1f, 1f, 1f, 1f);
+			resetBuilder.color = new Color (1f, 1f, 1f, 1f);
 		} else {
-			reset.color = new Color (1f, 1f, 1f, 0f);
+			deadMessage.color = new Color (1f, 1f, 1f, 0f);
+			deadMessage2.color = new Color (1f, 1f, 1f, 0f);
+			resetBlobbi.color = new Color (1f, 1f, 1f, 0f);
+			resetBuilder.color = new Color (1f, 1f, 1f, 0f);
 		}
 
 		/*if (leftoverBlocks == 9) {

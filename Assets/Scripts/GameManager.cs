@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using GamepadInput;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
@@ -14,6 +15,8 @@ public class GameManager : MonoBehaviour {
 	private GameObject player;
 	private GameObject blobbi;
 	private GameObject shadow;
+	private GameObject colorEngine;
+	private GameObject cloudsManager;
 	private List<string> scores;
 	private List<string> blobbiSc;
 	private List<string> builderSc;
@@ -27,6 +30,9 @@ public class GameManager : MonoBehaviour {
 	// Are we using a controller or KB/mouse?
 	public bool controllerBlobbi = false;
 	public bool controllerBuilder = false;
+
+	public bool blobbiRestart = false;
+	public bool builderRestart = false;
 	
 	void OnLevelWasLoaded(int level) {
 		tower = GameObject.Find("Tower");
@@ -37,6 +43,8 @@ public class GameManager : MonoBehaviour {
 		player = GameObject.Find("Player");
 		blobbi = GameObject.Find("Blobbi");
 		shadow = GameObject.Find("ShadowGoo");
+		colorEngine = GameObject.Find("ColorEngine");
+		cloudsManager = GameObject.Find("CloudManager");
 //		blobbiIn = blobbiIn.GetComponent<InputField>();
 //		builderIn = builderIn.GetComponent<InputField>();
 
@@ -56,7 +64,19 @@ public class GameManager : MonoBehaviour {
 
 		//Debug.Log(builderSc[3]);
 	} 
-	
+
+	public bool BlobbiDead()
+	{
+		// Returns if we have a Game Over
+		if (getPlayer().GetComponent<PlayerMove>().alive)
+		{
+			return false;
+		} else {
+			return true;
+		}
+
+	}
+
 	// Use this for initialization
 	void Awake () {
 		// Singleton stuff - there can only be one
@@ -80,6 +100,11 @@ public class GameManager : MonoBehaviour {
 	{
 		return blobbi;
 	}
+
+	public GameObject getCloudManager()
+	{
+		return cloudsManager;
+	}
 	
 	public TowerManager getTower()
 	{
@@ -100,6 +125,11 @@ public class GameManager : MonoBehaviour {
 	{
 		return playerCamera;
 	}
+
+	public GameObject getColorEngine()
+	{
+		return colorEngine;
+	}
 	
 	public GameObject getShadow()
 	{
@@ -116,9 +146,22 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetKey (KeyCode.Return))
+		if (BlobbiDead())
 		{
-			RestartLevel();
+			if (GamePad.GetButtonUp(GamePad.Button.A, GamePad.Index.One))
+			{
+				blobbiRestart = true;
+			}
+
+			if (GamePad.GetButtonUp(GamePad.Button.A, GamePad.Index.Two))
+			{
+				builderRestart = true;
+			}
+
+			if (blobbiRestart && builderRestart)
+			{
+				RestartLevel();
+			}
 		}
 	}
 	

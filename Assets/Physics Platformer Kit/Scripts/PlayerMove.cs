@@ -17,10 +17,12 @@ public class PlayerMove : MonoBehaviour
 	public AudioClip jumpSound;					//play when jumping
 	public AudioClip landSound;					//play when landing on ground
 	public AudioClip moveSound;					//play when moving on ground
+	public AudioClip deathSound;
 
 	public GameObject arrowPrefab;
 	private GameObject arrow;
 	private bool arrowing = false;
+	Quaternion originalRot;
 
 	//movement
 	public float accel = 70f;					//acceleration/deceleration in air or on the ground
@@ -109,6 +111,10 @@ public class PlayerMove : MonoBehaviour
 		rb.isKinematic = true;
 		rb.detectCollisions = false;
 		alive = false;
+
+		GetComponent<AudioSource>().volume = 1;
+		GetComponent<AudioSource>().clip = deathSound;
+		GetComponent<AudioSource>().Play ();
 
 	}
 
@@ -344,9 +350,11 @@ public class PlayerMove : MonoBehaviour
 			arrowing = true;
 
 			arrow.transform.localScale = new Vector3(arrow.transform.localScale.x, arrow.transform.localScale.y, arrow.transform.localScale.z);
-			GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().targetOffset = new Vector3(0f, 0.1f, 0f);
+			GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().targetOffset = new Vector3(0f, 0.1f, -3f);
 			GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().target = arrow.transform;
 			GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().closeUp = true;
+			originalRot = GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().transform.rotation;
+
 		}
 
 		if ((GamePad.GetButtonUp(GamePad.Button.LeftStick, GamePad.Index.One) && GameManager.instance.controllerBlobbi))
@@ -356,6 +364,7 @@ public class PlayerMove : MonoBehaviour
 			GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().targetOffset = new Vector3(0f, 2f, -7f);
 			GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().target = transform;
 			GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().closeUp = false;
+			GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().transform.rotation = originalRot;
 		}
 
 		if (!grounded)
@@ -366,6 +375,7 @@ public class PlayerMove : MonoBehaviour
 				GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().targetOffset = new Vector3(0f, 2f, -7f);
 				GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().target = transform;
 				GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().closeUp = false;
+				GameManager.instance.getPlayerCamera().GetComponent<CameraFollow>().transform.rotation = originalRot;
 				arrowing = false;
 			}
 		}

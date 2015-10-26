@@ -40,11 +40,19 @@ public class CameraFollow : MonoBehaviour
 	void FixedUpdate()
 	{
 		notColliding = true;
+
+	}
+
+	void LateUpdate()
+	{
+
 	}
 
 	//run our camera functions each frame
 	void Update()
 	{
+
+
 		
 
 		if (!target)
@@ -61,18 +69,6 @@ public class CameraFollow : MonoBehaviour
 		{
 			GameManager.instance.getPlayer ().transform.rotation = transform.rotation;
 		}
-	}
-	
-	void OnCollisionEnter(Collision c)
-	{
-		//notColliding = false;
-		//Debug.LogWarning("NOOOOOOOOOOOOOOOO", transform);
-	}
-
-	void OnCollisionStay(Collision c)
-	{
-		//notColliding = false;
-		//Debug.LogWarning("NOOOOOOOOOOOOOOOO", transform);
 	}
 
 	//toggle waterfilter, is camera clipping walls?
@@ -155,6 +151,15 @@ public class CameraFollow : MonoBehaviour
 				//otherwise, move cam to intended position
 				transform.position = nextFramePosition;
 			}
+
+
+			if (transform.position.y < Mathf.Max(-1f, GameManager.instance.getShadow().transform.position.y))
+			{
+				transform.position = new Vector3(transform.position.x,
+				                                 Mathf.Max(-1f, GameManager.instance.getShadow().transform.position.y),
+				                                 transform.position.z);
+			}
+
 		}
 	} 
 }

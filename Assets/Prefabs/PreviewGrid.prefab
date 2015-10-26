@@ -10,7 +10,7 @@ GameObject:
   - 4: {fileID: 466946}
   - 33: {fileID: 3353202}
   - 23: {fileID: 2304902}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: PreviewGrid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -81,7 +81,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Layer
-      value: 0
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

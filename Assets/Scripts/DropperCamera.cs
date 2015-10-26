@@ -87,16 +87,16 @@ public class DropperCamera : MonoBehaviour {
 		GamepadState state = GamePad.GetState(GamePad.Index.Two);
 
 
-		int scroll = 0;
+		float scroll = 0;
 		
 		if (GameManager.instance.controllerBuilder)
 		{
-			int scroll1 = GamePad.GetButtonUp (GamePad.Button.RightShoulder, GamePad.Index.Two) ? 1 : 0;
-			int scroll2 = GamePad.GetButtonUp (GamePad.Button.LeftShoulder, GamePad.Index.Two) ? 1 : 0;
+			float scroll1 = GamePad.GetTrigger (GamePad.Trigger.RightTrigger, GamePad.Index.Two);
+			float scroll2 = GamePad.GetTrigger (GamePad.Trigger.LeftTrigger, GamePad.Index.Two);
 			scroll = (scroll1 - scroll2);
 		}
 
-		float yMovement = scroll * 3f;
+		float yMovement = scroll * 9f * Time.deltaTime;
 		//Debug.LogWarning(yMovement);
 		transform.position = new Vector3(transform.position.x, transform.position.y + yMovement, transform.position.z);
 
@@ -195,7 +195,6 @@ public class DropperCamera : MonoBehaviour {
 				{
 					for (int i = 0; i <= previousRotates - 1; i++)
 					{
-						Debug.LogWarning("rotating");
 						blockPlace.transform.RotateAround(blockPlace.transform.position, Vector3.up, snapAngle);
 					}
 					previousRotates = 0;
@@ -208,8 +207,18 @@ public class DropperCamera : MonoBehaviour {
 
 
 
-				float controllerAngle = (Mathf.Atan2(leftStickY, leftStickX) * Mathf.Rad2Deg) - transform.eulerAngles.y;
-				float controllerMagnitude = (Mathf.Sqrt ((leftStickX * leftStickX) + (leftStickY * leftStickY))) * controllerInertia;
+				float controllerAngle = (Mathf.Atan2(leftStickY + (dPadY * 10f), leftStickX + (dPadX * 10f)) * Mathf.Rad2Deg) - transform.eulerAngles.y;
+				float controllerMagnitude = (Mathf.Sqrt (((leftStickX + dPadX) * (leftStickX + dPadX)) + ((leftStickY + dPadY) * (leftStickY + dPadY)))) * controllerInertia;
+
+				/*if (controllerAngle > 45f && controllerAngle < 135f)
+				{
+					controllerAngle = 90f;
+				}
+
+				if (controllerAngle > 45f && controllerAngle < 135f)
+				{
+					controllerAngle = 90f;
+				}*/
 
 				if (controllerInertia > 10f)
 				{
@@ -223,10 +232,11 @@ public class DropperCamera : MonoBehaviour {
 					controllerInertia = 1f;
 				}
 
-				//Debug.LogWarning(controllerInertia);
-
 				camX += Mathf.Cos(controllerAngle * Mathf.Deg2Rad) * 50 * Time.deltaTime * controllerMagnitude;
 				camZ += Mathf.Sin(controllerAngle * Mathf.Deg2Rad) * 50 * Time.deltaTime * controllerMagnitude;
+
+				/*Debug.LogWarning((Mathf.Cos(controllerAngle * Mathf.Deg2Rad) * 50 * Time.deltaTime * controllerMagnitude) + " | " + 
+				                 (Mathf.Sin(controllerAngle * Mathf.Deg2Rad) * 50 * Time.deltaTime * controllerMagnitude));*/
 
 						//camY += GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.Two).y * Time.deltaTime * 15f;
 
@@ -280,8 +290,11 @@ public class DropperCamera : MonoBehaviour {
 	void cameraUpdate()
 	{
 		//TODO: Figure out why Z rotation is applied below 50 degrees on X
-		transform.RotateAround(GameManager.instance.getTowerObject().transform.position, Vector3.up, GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.Two).x * Time.deltaTime * 50f);
-		transform.RotateAround(GameManager.instance.getTowerObject().transform.position, transform.right, GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.Two).y * Time.deltaTime * 50f);
+		Vector3 pos = new Vector3(tower.previewGrid.transform.position.x,
+		                          tower.previewGrid.transform.position.y,
+		                          tower.previewGrid.transform.position.z);
+		transform.RotateAround(pos, Vector3.up, GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.Two).x * Time.deltaTime * 50f);
+		transform.RotateAround(pos, transform.right, GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.Two).y * Time.deltaTime * 50f);
 
 		transform.rotation = Quaternion.Euler(Mathf.Clamp (transform.rotation.eulerAngles.x, 1f, 80f), transform.rotation.eulerAngles.y, Mathf.Clamp(transform.rotation.eulerAngles.z, -1f, 1f));
 	}
