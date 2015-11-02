@@ -91,9 +91,13 @@ public class DropperCamera : MonoBehaviour {
 		
 		if (GameManager.instance.controllerBuilder)
 		{
-			float scroll1 = GamePad.GetTrigger (GamePad.Trigger.RightTrigger, GamePad.Index.Two);
-			float scroll2 = GamePad.GetTrigger (GamePad.Trigger.LeftTrigger, GamePad.Index.Two);
-			scroll = (scroll1 - scroll2);
+			if (state.RightShoulder)
+			{
+				scroll += 1;
+			} else if (state.LeftShoulder)
+			{
+				scroll -= 1;
+			}
 		}
 
 		float yMovement = scroll * 9f * Time.deltaTime;

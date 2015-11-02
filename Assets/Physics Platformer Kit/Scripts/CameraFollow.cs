@@ -153,12 +153,13 @@ public class CameraFollow : MonoBehaviour
 			}
 
 
+			/* // NOTE: I HAVE DISABLED THE CAMERA COLLISION CHECKING. NEED TO REENABLE LATER -Nick
 			if (transform.position.y < Mathf.Max(-1f, GameManager.instance.getShadow().transform.position.y))
 			{
 				transform.position = new Vector3(transform.position.x,
 				                                 Mathf.Max(-1f, GameManager.instance.getShadow().transform.position.y),
 				                                 transform.position.z);
-			}
+			}*/
 
 		}
 	} 
