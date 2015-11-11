@@ -4,10 +4,12 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using GamepadInput;
+using System.IO;
 
 public class MainMenu : MonoBehaviour 
 {
 	MainMenu menu;
+	public MainMenu2 menu2;
 	public RawImage logo;
 	public Button start;
 	public Button quit;
@@ -17,43 +19,106 @@ public class MainMenu : MonoBehaviour
 	public Canvas helpMenu;
 	public Text playerInput;
 
-	public bool s1 = false;
-	public bool s2 = false;
-
-	public bool quitting = false;
-	bool q1 = false;
-	bool q2 = false;
-	bool n1 = false;
-	bool n2 = false;
-	
-	
+	public Text score1;
+	public Text score2;
+	public Text score3;
+	public Text score4;
+	public Text score5;
+	private List<string> scores; 
+	private string path;
+	private string file;
+	private bool starting;
+	private bool quitting;
+	private bool y;
+	private bool n;
+	private bool b;
 	// Use this for initialization
 	void Start () {
 		menu = GetComponent<MainMenu>();
+		menu2 = menu2.GetComponent<MainMenu2>();
 		quitMenu = quitMenu.GetComponent<Canvas> ();
 		helpMenu = helpMenu.GetComponent<Canvas> ();
 		start = start.GetComponent<Button>();
 		quit = quit.GetComponent<Button>();
 		help = help.GetComponent<Button>();
+		playerInput = playerInput.GetComponent<Text>();
 		menu.enabled = true;
 		logo.enabled = true;
 		quitMenu.enabled = false;
 		helpMenu.enabled = false;
+		starting = false;
+		quitting = false;
+		y = false;
+		n = false;
+		b = false;
+		file = "HighScores.txt";
+		scores = new List<string>();
+		ReadScores ();
+		
+		score1.text = "1) " + scores[0].ToString() + "m";
+		score2.text = "2) " + scores[1].ToString() + "m";
+		score3.text = "3) " + scores[2].ToString() + "m";
+		score4.text = "4) " + scores[3].ToString() + "m";
+		score5.text = "5) " + scores[4].ToString() + "m";
+
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
+		if(menu2.Starting && starting){
+			Application.LoadLevel(2);
+		}
 
+
+		if(menu2.Starting){
+			playerInput.text = "Blobbi Wants To Play";
+		}
+
+		if(GamePad.GetButtonUp(GamePad.Button.B,GamePad.Index.One)){
+			Quit();
+		}
+
+		if(GamePad.GetButtonUp(GamePad.Button.X,GamePad.Index.One)){
+			HelpMenu();
+		}
+		if(GamePad.GetButtonUp(GamePad.Button.Y,GamePad.Index.One) ){
+			Back();
+		}
+		
+		if(GamePad.GetButtonDown(GamePad.Button.A,GamePad.Index.One)){
+			Start();
+		}
+		
+		if(y || menu2.Y){
+			ExitGame();
+			if(GamePad.GetButtonDown(GamePad.Button.Back,GamePad.Index.One)){
+				NoQuit ();
+			}
+			
+			if(GamePad.GetButtonDown(GamePad.Button.Start,GamePad.Index.One)){
+				y = true;;
+			}
+			
+			if(quitting && menu2.Quitting){
+				Quiter();
+			}
+			
+		}
+		
 	}
 	
 	/// <summary>
 	/// Exits the game. When you click exit it opens up exit menu
 	/// </summary>
 	public void ExitGame(){
+		quitting = true;
+		y = false;
+		n = false;
 		quitMenu.enabled = true;
 		start.enabled = false;
 		quit.enabled = false;
 		help.enabled = false;
+
 	}
 
 	/// <summary>
@@ -64,6 +129,8 @@ public class MainMenu : MonoBehaviour
 		start.enabled = false;
 		quit.enabled = false;
 		help.enabled = false;
+		b = true;
+
 	}
 
 	/// <summary>
@@ -74,23 +141,27 @@ public class MainMenu : MonoBehaviour
 		start.enabled = true;
 		quit.enabled = true;
 		help.enabled = true;
+		b = false;
 	}
 
 	/// <summary>
 	/// if the players dont want to quit the game
 	/// </summary>
 	public void NoQuit(){
+		n = true;
+		quitting = false;
 		quitMenu.enabled = false;
 		start.enabled = true;
 		quit.enabled = true;
 		help.enabled = true;
+		quitting = false;
 	}
 
 	/// <summary>
 	/// Quit this game.
 	/// </summary>
 	public void Quit(){
-		Application.Quit();
+		bool y = true;
 	}
 	
 	/// <summary>
@@ -98,7 +169,36 @@ public class MainMenu : MonoBehaviour
 	/// </summary>
 	public void StartGame()
 	{
-		Application.LoadLevel (2);	
+		starting = true;
 	}
-	
+
+	public bool Starting{
+		get{return starting;}
+	}
+
+	public bool Quitting{
+		get{return quitting;}
+	}
+	public bool N{
+		get{return n;}
+	}
+	public bool Y{
+		get{return y;}
+	}
+	public void ReadScores(){
+		using(StreamReader sr = new StreamReader(file))
+		{
+			string line;
+			while ( !sr.EndOfStream)
+			{
+				line = sr.ReadLine();
+				scores.Add(line);
+			}
+			
+		}
+	}
+
+	public void Quiter(){
+		Application.LoadLevel(3);
+	}
 }
