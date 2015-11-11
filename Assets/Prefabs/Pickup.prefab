@@ -145,7 +145,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: e7988205ccbf01e46b864489964fd1a0, type: 3}
+  m_audioClip: {fileID: 8300000, guid: e82056dc866e88941aca31e4fb3327f6, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -249,7 +249,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   energyAmount: 10
-  pickupSound: {fileID: 8300000, guid: e7988205ccbf01e46b864489964fd1a0, type: 3}
+  pickupSound: {fileID: 8300000, guid: e82056dc866e88941aca31e4fb3327f6, type: 3}
   ps: {fileID: 19891866}
   ps2: {fileID: 19888186}
 --- !u!198 &19888186
@@ -2444,6 +2444,18 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: energyAmount
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 14202b79c52bcf24287d108ac1a7c8ed, type: 3}
+    - target: {fileID: 0}
+      propertyPath: pickupSound
+      value: 
+      objectReference: {fileID: 8300000, guid: e82056dc866e88941aca31e4fb3327f6, type: 3}
+    - target: {fileID: 0}
+      propertyPath: BypassReverbZones
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

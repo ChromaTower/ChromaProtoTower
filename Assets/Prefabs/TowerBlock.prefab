@@ -92,7 +92,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: ceff9fd81cd07d845a83232b25bc9fb6, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -168,7 +168,7 @@ MonoBehaviour:
   matPreview: {fileID: 2100000, guid: bed74fe3df46d534c9e0108cca05df25, type: 2}
   matPreview2: {fileID: 2100000, guid: bed74fe3df46d534c9e0108cca05df25, type: 2}
   blockLand: {fileID: 8300000, guid: c8da9395222b86245bea88d75b49a0ff, type: 3}
-  blockTouch: {fileID: 0}
+  blockTouch: {fileID: 8300000, guid: ceff9fd81cd07d845a83232b25bc9fb6, type: 3}
   snapping: 1
   resetColourTime: 9999
 --- !u!1001 &100100000
@@ -249,7 +249,7 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: blockTouch
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 8300000, guid: ceff9fd81cd07d845a83232b25bc9fb6, type: 3}
     - target: {fileID: 0}
       propertyPath: m_PlayOnAwake
       value: 0
@@ -258,6 +258,14 @@ Prefab:
       propertyPath: matPreview2
       value: 
       objectReference: {fileID: 2100000, guid: bed74fe3df46d534c9e0108cca05df25, type: 2}
+    - target: {fileID: 0}
+      propertyPath: BypassEffects
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: ceff9fd81cd07d845a83232b25bc9fb6, type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 107870}
