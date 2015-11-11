@@ -12,8 +12,7 @@ public class PauseMenu : MonoBehaviour {
 	bool p2 = false;
 	bool r1 = false;
 	bool r2 = false;
-	bool q1 = false;
-	bool q2 = false;
+	bool q = false;
 	bool t1= false;
 	bool t2 = false;
 	bool quit = false;
@@ -60,11 +59,11 @@ public class PauseMenu : MonoBehaviour {
 			if (GUI.Button (new Rect (330, 600, 150, 35), "Quit" )) {
 				// quits game
 				audio.PlayOneShot(buttonClick);
-				Application.Quit ();
+				q = true;
 			}
 			
 			// Resumes the game when paused
-			if (GUI.Button (new Rect (330, 400, 150, 35), "Back")) {
+			if (GUI.Button (new Rect (330, 400, 150, 35), "Resume")) {
 				audio.PlayOneShot(buttonClick);
 				paused = togglePause();
 				
@@ -88,7 +87,7 @@ public class PauseMenu : MonoBehaviour {
 			// Make the Quit button.
 			if (GUI.Button (new Rect (Screen.currentResolution.width - 500, 600, 150, 35), "Quit") || GamePad.GetButtonDown(GamePad.Button.B, GamePad.Index.Two)) {
 				// quits game
-				q2 = true;
+				q = true;
 			}
 			
 			// Resumes the game when paused
@@ -116,7 +115,7 @@ public class PauseMenu : MonoBehaviour {
 				paused = togglePause();
 			}
 			// if both Players want to quit
-			if (q1 || q2){
+			if (q){
 				quit = true;
 			}
 		}
@@ -150,8 +149,7 @@ public class PauseMenu : MonoBehaviour {
 				p2= false;
 				t1 = false;
 				t2 = false;
-				q1 = false;
-				q2 = false;
+				q = false;
 				quit = false;
 				paused = true;
 			}
@@ -190,6 +188,6 @@ public class PauseMenu : MonoBehaviour {
 	{
 		paused = false;
 		getClick.enabled = !getClick.enabled;
-		Application.LoadLevel (0);	
+		Application.LoadLevel (1);	
 	}
 }
