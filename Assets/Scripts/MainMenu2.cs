@@ -73,7 +73,7 @@ public class MainMenu2 : MonoBehaviour
 		
 		
 		if(menu2.Starting){
-			playerInput.text = "Blobbi Wants To Play";
+			playerInput.text = "Builder Wants To Play";
 		}
 		
 		if(GamePad.GetButtonDown(GamePad.Button.B,GamePad.Index.Two)){
@@ -85,10 +85,6 @@ public class MainMenu2 : MonoBehaviour
 		}
 		if(GamePad.GetButtonDown(GamePad.Button.Y,GamePad.Index.Two) ){
 			Back();
-		}
-
-		if(GamePad.GetButtonDown(GamePad.Button.A,GamePad.Index.Two)){
-			Start();
 		}
 		
 		if(y || menu2.Y){

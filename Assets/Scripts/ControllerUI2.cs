@@ -92,7 +92,7 @@ public class ControllerUI2 : MonoBehaviour {
 		if (Input.GetAxis ("DPadY2") == 0) {
 			dPadInputY = false;
 		}
-			if (Input.GetButton ("Submit")) {// Executes the Press
+			if (Input.GetButton ("P2Submit")) {// Executes the Press
 				ExecuteEvents.Execute(selectedOject.gameObject, eventSystem, ExecuteEvents.pointerDownHandler); 
 
 				}

@@ -85,10 +85,6 @@ public class MainMenu : MonoBehaviour
 			Back();
 		}
 		
-		if(GamePad.GetButtonDown(GamePad.Button.A,GamePad.Index.One)){
-			Start();
-		}
-		
 		if(y || menu2.Y){
 			ExitGame();
 			if(GamePad.GetButtonDown(GamePad.Button.Back,GamePad.Index.One)){
