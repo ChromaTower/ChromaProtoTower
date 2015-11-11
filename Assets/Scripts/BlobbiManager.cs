@@ -18,6 +18,7 @@ public class BlobbiManager : MonoBehaviour {
 
 		hue = 0f;
 		hueSpeed = 0f;
+		hueMax = 5f;
 	}
 	
 	// Update is called once per frame
@@ -32,7 +33,8 @@ public class BlobbiManager : MonoBehaviour {
 
 		hue += hueSpeed * Time.deltaTime;
 
-			hueMax = GameManager.instance.getColorEngine().GetComponent<ColorManager>().hue;
+			//hueMax = GameManager.instance.getColorEngine().GetComponent<ColorManager>().hue;
+	
 
 		// Value rollover
 		if (hue > hueMax)

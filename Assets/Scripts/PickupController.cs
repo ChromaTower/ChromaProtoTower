@@ -46,7 +46,7 @@ public class PickupController : MonoBehaviour {
 
 				// Make the goo rise quicker!
 				GameManager.instance.getShadow().GetComponent<ShadowManager>().riseRate += energyAmount/80f;
-				GameManager.instance.getColorEngine().GetComponent<ColorManager>().introduceColor();
+				//GameManager.instance.getColorEngine().GetComponent<ColorManager>().introduceColor();
 			}
 		}
 	}
