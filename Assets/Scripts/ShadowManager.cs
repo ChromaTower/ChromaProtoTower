@@ -7,7 +7,7 @@ public class ShadowManager : MonoBehaviour {
 	private Vector3 startScale;
 	// The rate the goo rises, in units per second
 	public float riseRate = 0.5f;
-
+	private int rises = 0;
 	private Material mat;
 
 	// Use this for initialization
@@ -18,6 +18,7 @@ public class ShadowManager : MonoBehaviour {
 		startScale = transform.localScale;
 
 		mat = GetComponent<Renderer>().material;
+
 	}
 	
 	// Update is called once per frame
@@ -25,6 +26,12 @@ public class ShadowManager : MonoBehaviour {
 		// Slowly rise
 		transform.position += new Vector3(0f, riseRate * Time.deltaTime, 0f);
 		mat.mainTextureOffset = new Vector2(mat.mainTextureOffset.x + 0.00001f, mat.mainTextureOffset.y + 0.00001f);
+
+		GameObject player = GameManager.instance.getPlayer();
+
+		if (transform.position.y > player.transform.position.y) {
+			player.GetComponent<PlayerMove>().death();
+		}
 	}
 
 	public void reset()
@@ -32,13 +39,21 @@ public class ShadowManager : MonoBehaviour {
 		transform.position = new Vector3(transform.position.x, startY, transform.position.z);
 	}
 
-	void OnTriggerEnter(Collider collider)
+
+	public void rise()
 	{
-		if (collider.gameObject.tag == "Player") {
-			collider.gameObject.GetComponent<PlayerMove>().death();
-		}
-		if (collider.gameObject.tag == "Block") {
-			collider.GetComponent<Renderer>().material.color = new Color (0f, 0f, 0f);
+		rises += 1;
+
+		if (rises >= 7)
+		{
+			riseRate += 0.1f;
+		} else {
+			if (rises <= 3)
+			{
+				riseRate += 0.125f;
+			} else {
+				riseRate += 0.125f - ((rises - 3) * 0.025f);
+			}
 		}
 	}
 }

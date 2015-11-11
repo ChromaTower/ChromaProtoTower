@@ -56,7 +56,10 @@ public class PlayerMove : MonoBehaviour
 	private DealDamage dealDamage;
 
 	private Vector3 startPos;
-	
+
+	public GameObject splashEffect;
+	public GameObject splashCloudEffect;
+
 	//setup
 	void Awake()
 	{	
@@ -106,16 +109,35 @@ public class PlayerMove : MonoBehaviour
 
 	public void death()
 	{
-		GameManager.instance.getBlobbi().GetComponent<BlobbiManager>().GetComponent<Renderer>().material.color = new Color (0f, 0f, 0f, 0f);
-		Rigidbody rb = characterMotor.GetComponent<Rigidbody>();
-		rb.isKinematic = true;
-		rb.detectCollisions = false;
-		alive = false;
+		if (alive == true)
+		{
+			GameManager.instance.getMusicHandler().GetComponent<MusicHandler>().stopPitch ();
 
-		GetComponent<AudioSource>().volume = 1;
-		GetComponent<AudioSource>().clip = deathSound;
-		GetComponent<AudioSource>().Play ();
+			GameObject splash = (GameObject)Object.Instantiate(splashEffect,
+			                                                   new Vector3(transform.position.x,
+			            													GameManager.instance.getShadow().transform.position.y,
+			            													transform.position.z),
+			                                                   Quaternion.Euler (new Vector3(90f, 0f, 0f)));
+			GameObject splashCloud = (GameObject)Object.Instantiate(splashCloudEffect,
+			                                                   new Vector3(transform.position.x,
+			          										   GameManager.instance.getShadow().transform.position.y,
+			         										   transform.position.z),
+			                                                   Quaternion.Euler (new Vector3(90f, 0f, 0f)));
+			splash.GetComponent<ParticleSystem>().startSpeed = characterMotor.GetComponent<Rigidbody>().velocity.y / 3f;
+			print (characterMotor.GetComponent<Rigidbody>().velocity.y / 5f);
+			GameManager.instance.getBlobbi().GetComponent<BlobbiManager>().alive = false;
+			GameManager.instance.getBlobbi().GetComponent<BlobbiManager>().GetComponent<Renderer>().enabled = false;
+			// Stop the rising since we're dead!
+			GameManager.instance.getShadow().GetComponent<ShadowManager>().riseRate = 0f;
+			Rigidbody rb = characterMotor.GetComponent<Rigidbody>();
+			rb.isKinematic = true;
+			rb.detectCollisions = false;
+			alive = false;
 
+			GetComponent<AudioSource>().volume = 1;
+			GetComponent<AudioSource>().clip = deathSound;
+			GetComponent<AudioSource>().Play ();
+		}
 	}
 
 	//get state of player, values and input

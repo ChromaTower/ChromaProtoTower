@@ -79,8 +79,17 @@ public class CharacterMotor : MonoBehaviour
 		}
 		
 		Vector3 newDir = lookDir - characterPos;
-		Quaternion dirQ =  Quaternion.LookRotation (newDir);
-//		print(dirQ);
+		Quaternion dirQ;
+
+		if (newDir == Vector3.zero)
+		{
+			dirQ = new Quaternion(0f, 0f, 0f, 1f);
+		} else {
+			dirQ = Quaternion.LookRotation (newDir);
+		}
+
+
+		//print(dirQ);
 		Quaternion slerp = Quaternion.Slerp (transform.rotation, dirQ, turnSpeed * Time.deltaTime);
 		GetComponent<Rigidbody>().MoveRotation (slerp);
 	}

@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour {
 	private GameObject shadow;
 	private GameObject colorEngine;
 	private GameObject cloudsManager;
+	private GameObject musicHandler;
 	private List<string> scores;
 	private List<string> blobbiSc;
 	private List<string> builderSc;
@@ -45,6 +46,7 @@ public class GameManager : MonoBehaviour {
 		shadow = GameObject.Find("ShadowGoo");
 		colorEngine = GameObject.Find("ColorEngine");
 		cloudsManager = GameObject.Find("CloudManager");
+		musicHandler = GameObject.Find("musicHandler");
 //		blobbiIn = blobbiIn.GetComponent<InputField>();
 //		builderIn = builderIn.GetComponent<InputField>();
 
@@ -134,6 +136,11 @@ public class GameManager : MonoBehaviour {
 	public GameObject getShadow()
 	{
 		return shadow;
+	}
+
+	public GameObject getMusicHandler()
+	{
+		return musicHandler;
 	}
 	
 	void RestartLevel()
