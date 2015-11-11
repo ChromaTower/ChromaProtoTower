@@ -31,6 +31,7 @@ public class MainMenu : MonoBehaviour
 	private bool quitting;
 	private bool y;
 	private bool n;
+	private bool b;
 	// Use this for initialization
 	void Start () {
 		menu = GetComponent<MainMenu>();
@@ -49,6 +50,7 @@ public class MainMenu : MonoBehaviour
 		quitting = false;
 		y = false;
 		n = false;
+		b = false;
 		file = "HighScores.txt";
 		scores = new List<string>();
 		ReadScores ();
@@ -67,16 +69,40 @@ public class MainMenu : MonoBehaviour
 			Application.LoadLevel(2);
 		}
 
-		if(menu2.Quitting || quitting){
+
+		if(menu2.Starting){
+			playerInput.text = "Blobbi Wants To Play";
+		}
+
+		if(GamePad.GetButtonUp(GamePad.Button.B,GamePad.Index.One)){
+			Quit();
+		}
+
+		if(GamePad.GetButtonUp(GamePad.Button.X,GamePad.Index.One)){
+			HelpMenu();
+		}
+		if(GamePad.GetButtonUp(GamePad.Button.Y,GamePad.Index.One) ){
+			Back();
+		}
+		
+		if(GamePad.GetButtonDown(GamePad.Button.A,GamePad.Index.One)){
+			Start();
+		}
+		
+		if(y || menu2.Y){
 			ExitGame();
-		}
-
-		if(y && menu2.Y){
-			Quiter();
-		}
-
-		if(n || menu2.N){
-			NoQuit();
+			if(GamePad.GetButtonDown(GamePad.Button.Back,GamePad.Index.One)){
+				NoQuit ();
+			}
+			
+			if(GamePad.GetButtonDown(GamePad.Button.Start,GamePad.Index.One)){
+				y = true;;
+			}
+			
+			if(quitting && menu2.Quitting){
+				Quiter();
+			}
+			
 		}
 		
 	}
@@ -103,6 +129,8 @@ public class MainMenu : MonoBehaviour
 		start.enabled = false;
 		quit.enabled = false;
 		help.enabled = false;
+		b = true;
+
 	}
 
 	/// <summary>
@@ -113,6 +141,7 @@ public class MainMenu : MonoBehaviour
 		start.enabled = true;
 		quit.enabled = true;
 		help.enabled = true;
+		b = false;
 	}
 
 	/// <summary>
@@ -154,7 +183,7 @@ public class MainMenu : MonoBehaviour
 		get{return n;}
 	}
 	public bool Y{
-		get{return Y;}
+		get{return y;}
 	}
 	public void ReadScores(){
 		using(StreamReader sr = new StreamReader(file))

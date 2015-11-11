@@ -31,6 +31,8 @@ public class MainMenu2 : MonoBehaviour
 	private bool quitting;
 	private bool y;
 	private bool n;
+	private bool h;
+	private bool b;
 	// Use this for initialization
 	void Start () {
 		menu = GetComponent<MainMenu2>();
@@ -49,6 +51,8 @@ public class MainMenu2 : MonoBehaviour
 		quitting = false;
 		y = false;
 		n = false;
+		h = false;
+		b = false;
 		file = "HighScores.txt";
 		scores = new List<string>();
 		ReadScores ();
@@ -67,18 +71,43 @@ public class MainMenu2 : MonoBehaviour
 			Application.LoadLevel(2);
 		}
 		
-		if(menu2.Quitting || quitting){
+		
+		if(menu2.Starting){
+			playerInput.text = "Blobbi Wants To Play";
+		}
+		
+		if(GamePad.GetButtonDown(GamePad.Button.B,GamePad.Index.Two)){
+			Quit ();
+		}
+		
+		if(GamePad.GetButtonUp(GamePad.Button.X,GamePad.Index.Two)){
+			HelpMenu();
+		}
+		if(GamePad.GetButtonDown(GamePad.Button.Y,GamePad.Index.Two) ){
+			Back();
+		}
+
+		if(GamePad.GetButtonDown(GamePad.Button.A,GamePad.Index.Two)){
+			Start();
+		}
+		
+		if(y || menu2.Y){
 			ExitGame();
-			if(y && menu2.Y){
+			if(GamePad.GetButtonDown(GamePad.Button.Back,GamePad.Index.One)){
+				NoQuit ();
+			}
+			
+			if(GamePad.GetButtonDown(GamePad.Button.Start,GamePad.Index.One)){
+				y = true;;
+			}
+			
+			if(quitting && menu2.Quitting){
 				Quiter();
 			}
+			
 		}
 
-
-
-		if(n || menu2.N){
-			NoQuit();
-		}
+		
 	}
 	
 	/// <summary>
@@ -103,6 +132,8 @@ public class MainMenu2 : MonoBehaviour
 		start.enabled = false;
 		quit.enabled = false;
 		help.enabled = false;
+		b = true;
+		
 	}
 	
 	/// <summary>
@@ -113,6 +144,8 @@ public class MainMenu2 : MonoBehaviour
 		start.enabled = true;
 		quit.enabled = true;
 		help.enabled = true;
+		b = false;
+
 	}
 	
 	/// <summary>
@@ -132,7 +165,7 @@ public class MainMenu2 : MonoBehaviour
 	/// Quit this game.
 	/// </summary>
 	public void Quit(){
-		y = true;
+		bool y = true;
 	}
 	
 	/// <summary>
@@ -150,14 +183,12 @@ public class MainMenu2 : MonoBehaviour
 	public bool Quitting{
 		get{return quitting;}
 	}
-
 	public bool N{
 		get{return n;}
 	}
 	public bool Y{
-		get{return Y;}
+		get{return y;}
 	}
-
 	public void ReadScores(){
 		using(StreamReader sr = new StreamReader(file))
 		{
@@ -170,9 +201,8 @@ public class MainMenu2 : MonoBehaviour
 			
 		}
 	}
-
+	
 	public void Quiter(){
 		Application.LoadLevel(3);
 	}
-
 }
