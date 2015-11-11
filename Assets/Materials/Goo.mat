@@ -7,7 +7,7 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Goo
-  m_Shader: {fileID: 45, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 206, guid: 0000000000000000f000000000000000, type: 0}
   m_ShaderKeywords: _EMISSION _NORMALMAP _PARALLAXMAP _SPECGLOSSMAP
   m_LightmapFlags: 1
   m_CustomRenderQueue: -1
@@ -146,6 +146,10 @@ Material:
         second: .0900000036
       data:
         first:
+          name: PixelSnap
+        second: 0
+      data:
+        first:
           name: _Parallax
         second: .0799999982
       data:
@@ -182,6 +186,10 @@ Material:
         second: 0
       data:
         first:
+          name: _InvFade
+        second: 1
+      data:
+        first:
           name: _WaveScale
         second: .063000001
       data:
@@ -208,11 +216,15 @@ Material:
       data:
         first:
           name: _Color
-        second: {r: .125, g: .125, b: .125, a: 1}
+        second: {r: .477941155, g: .477941155, b: .477941155, a: 1}
       data:
         first:
           name: _SpecColor
         second: {r: .367647052, g: .367647052, b: .367647052, a: 1}
+      data:
+        first:
+          name: _TintColor
+        second: {r: .5, g: .5, b: .5, a: .5}
       data:
         first:
           name: _ReflectColor

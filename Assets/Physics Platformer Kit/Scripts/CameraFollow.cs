@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using GamepadInput;
+using System.Collections;
+using System.Collections.Generic;
 
 public class CameraFollow : MonoBehaviour 
 {
@@ -21,7 +23,9 @@ public class CameraFollow : MonoBehaviour
 	private bool notColliding = true;
 
 	public bool closeUp = false;
-	
+
+	private List<GameObject> obscuringBlocks = new List<GameObject>();
+
 	//setup objects
 	void Awake()
 	{
@@ -35,6 +39,7 @@ public class CameraFollow : MonoBehaviour
 		//don't smooth rotate if were using mouselook
 		if(mouseFreelook)
 			rotateDamping = 0f;
+
 	}
 
 	void FixedUpdate()
@@ -45,15 +50,11 @@ public class CameraFollow : MonoBehaviour
 
 	void LateUpdate()
 	{
-
 	}
 
 	//run our camera functions each frame
 	void Update()
 	{
-
-
-		
 
 		if (!target)
 			return;
@@ -153,14 +154,50 @@ public class CameraFollow : MonoBehaviour
 			}
 
 
-			/* // NOTE: I HAVE DISABLED THE CAMERA COLLISION CHECKING. NEED TO REENABLE LATER -Nick
 			if (transform.position.y < Mathf.Max(-1f, GameManager.instance.getShadow().transform.position.y))
 			{
 				transform.position = new Vector3(transform.position.x,
 				                                 Mathf.Max(-1f, GameManager.instance.getShadow().transform.position.y),
 				                                 transform.position.z);
-			}*/
+			}
 
 		}
 	} 
+
+	void checkObscuringBlocks()
+	{
+		foreach (GameObject b in obscuringBlocks)
+		{
+			if (b != null)
+			{
+				b.GetComponent<Block>().setAlpha (1f);
+			}
+		}
+
+		obscuringBlocks.Clear ();
+
+		RaycastHit[] hits;
+		hits = Physics.RaycastAll (transform.position, transform.forward, Vector3.Distance (transform.position, target.transform.position), 1 << 16);
+
+
+
+		for (int i = 0; i < hits.Length; i++)
+		{
+			RaycastHit hit = hits[i];
+			obscuringBlocks.Add (hit.transform.gameObject);
+		}
+
+		foreach (GameObject b in obscuringBlocks)
+		{
+			b.GetComponent<Block>().setAlpha (0.2f);
+		}
+
+	}
+
+	void OnPreCull()
+	{
+		checkObscuringBlocks();
+		GameManager.instance.getTower ().transparentCameraPrep();
+	}
+
 }

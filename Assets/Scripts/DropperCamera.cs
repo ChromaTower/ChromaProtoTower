@@ -7,6 +7,7 @@ public class DropperCamera : MonoBehaviour {
 	// Used for placing new blocks on screen
 	private GameObject blockPlace = null;
 	private Vector3 lastBlockPos = Vector3.zero;
+	public Material mat;
 	int previousRotates = 0;
 	int currentRotates = 0;
 
@@ -60,9 +61,8 @@ public class DropperCamera : MonoBehaviour {
 		// Makes the map fit in the camera
 		camera.orthographicSize = Mathf.Max(tower.maxX - tower.minX, tower.maxZ - tower.minZ) - 1f;
 
-		transform.position = new Vector3(tower.transform.position.x - (tower.mapXSize/2), -12, tower.transform.position.z - (tower.mapZSize/2));
+		transform.position = new Vector3(tower.transform.position.x - (tower.mapXSize/2), 9f, tower.transform.position.z - (tower.mapZSize/2));
 		maxDistAboveTower = camera.orthographicSize;
-
 
 	}
 
@@ -100,7 +100,7 @@ public class DropperCamera : MonoBehaviour {
 			}
 		}
 
-		float yMovement = scroll * 9f * Time.deltaTime;
+		float yMovement = scroll * 12f * Time.deltaTime;
 		//Debug.LogWarning(yMovement);
 		transform.position = new Vector3(transform.position.x, transform.position.y + yMovement, transform.position.z);
 
@@ -117,47 +117,6 @@ public class DropperCamera : MonoBehaviour {
 		grid.transform.position = new Vector3(grid.transform.position.x, ((Mathf.Round (transform.position.y / tower.snap) - 5f) * tower.snap), grid.transform.position.z);
 	}
 
-	void rotateUpdate()
-	{
-		// Only rotate if the time has elapsed
-		if (rotWaiting <= 0f)
-		{
-			int scroll;
-
-			if (GameManager.instance.controllerBuilder)
-			{
-				int scroll1 = GamePad.GetButtonUp (GamePad.Button.RightShoulder, GamePad.Index.Two) ? 1 : 0;
-				int scroll2 = GamePad.GetButtonUp (GamePad.Button.LeftShoulder, GamePad.Index.Two) ? 1 : 0;
-				scroll = (scroll2 - scroll1);
-			} else {
-				// Mouse instead
-				scroll = (int)Input.GetAxis("Mouse ScrollWheel");
-			}
-
-			
-			if (scroll != 0)
-			{
-				rotAngle = (int)Mathf.Sign(scroll);
-
-				// Make the user wait before they can rotate again
-				rotWaiting = rotWaitTime;
-			}
-		} else {
-			// Decrease the rotation time
-			rotWaiting -= Time.deltaTime;
-			
-			// If the timer hasn't elapsed, rotate normally
-			// If the rotation timer has elapsed, snap to the angle (prevents overshooting)
-			if (rotWaiting > 0)
-			{
-				transform.RotateAround(tower.floor.transform.position, Vector3.up, rotAngle * ((snapAngle / rotWaitTime) * Time.deltaTime));
-			} else {
-				// Round the angle
-				targetAngle = Mathf.Round((transform.eulerAngles.y - initAngle) / snapAngle) * snapAngle;
-				transform.RotateAround(tower.floor.transform.position, Vector3.up, targetAngle - (transform.eulerAngles.y - initAngle));
-			}
-		}
-	}
 
 	void mouseUpdate()
 	{
@@ -280,6 +239,7 @@ public class DropperCamera : MonoBehaviour {
 					// Wake up the block - time to dropPlace();
 					lastBlockPos = blockPlace.transform.position;
 					blockPlace.GetComponent<Block>().Drop();
+					transform.position = new Vector3(transform.position.x, blockPlace.transform.position.y + (tower.snap * 1.5f) + 9f, transform.position.z);
 					previousRotates = currentRotates % 4;
 					// Reset the timer so the player has to wait a bit before spawning another block
 					blockWaiting = blockWaitTime;
@@ -301,6 +261,12 @@ public class DropperCamera : MonoBehaviour {
 		transform.RotateAround(pos, transform.right, GamePad.GetAxis (GamePad.Axis.RightStick, GamePad.Index.Two).y * Time.deltaTime * 50f);
 
 		transform.rotation = Quaternion.Euler(Mathf.Clamp (transform.rotation.eulerAngles.x, 1f, 80f), transform.rotation.eulerAngles.y, Mathf.Clamp(transform.rotation.eulerAngles.z, -1f, 1f));
+	}
+
+
+	void OnPreCull()
+	{
+		GameManager.instance.getTower ().opaqueCameraPrep();
 	}
 
 	// Update is called once per frame

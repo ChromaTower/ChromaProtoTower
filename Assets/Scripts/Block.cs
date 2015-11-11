@@ -7,6 +7,7 @@ public class Block : MonoBehaviour {
 	private Rigidbody rb;
 	public Renderer re;
 	public Material mat;
+	public Material matTransparent;
 	public Material matPreview;
 	public Material matPreview2;
 	public AudioClip blockLand;
@@ -18,6 +19,9 @@ public class Block : MonoBehaviour {
 	private bool falling = false;
 	private bool previewed = false;
 	private bool activated = false;
+
+	private float blockAlpha;
+
 
 
 
@@ -36,6 +40,8 @@ public class Block : MonoBehaviour {
 	private List<GameObject> shape = new List<GameObject>();
 	private List<GameObject> previews = new List<GameObject>();
 
+
+	private GameObject ink;
 
 	// Returns the block array
 	public List<GameObject> getShape()
@@ -132,6 +138,7 @@ public class Block : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		tower = GameManager.instance.getTower();
+		ink = GameManager.instance.getShadow();
 		snap = tower.getSnap ();
 
 		re = GetComponent<Renderer>();
@@ -173,12 +180,46 @@ public class Block : MonoBehaviour {
 			alpha = 1f;
 		}
 
+		blockAlpha = alpha;
+
 		// Used for previews
 		foreach(GameObject o in shape)
 		{
-			o.GetComponent<Renderer>().material.color = new Color(1.0f, 1.0f, 1.0f, alpha);
+			o.GetComponent<Renderer>().material.color = new Color(o.GetComponent<Renderer>().material.color.r, o.GetComponent<Renderer>().material.color.g, o.GetComponent<Renderer>().material.color.b, blockAlpha);
 		}
-
+		
+	}
+	
+	public void setTransparents()
+	{
+		if (activated)
+		{
+		if (blockAlpha < 1f && blockAlpha > 0f)
+		{
+			foreach(GameObject o in shape)			
+			{
+				Color col = o.GetComponent<Renderer>().material.color;
+				o.GetComponent<Renderer>().material = matTransparent;
+				o.GetComponent<Renderer>().material.color = col;
+			}
+		}
+		}
+	}
+	
+	public void setOpaques()
+	{
+		if (activated)
+		{
+		//if (blockAlpha < 1f)
+		//{
+			foreach(GameObject o in shape)			
+			{
+				Color col = o.GetComponent<Renderer>().material.color;
+				o.GetComponent<Renderer>().material = mat;
+				o.GetComponent<Renderer>().material.color = col;
+			}
+		//}
+		}
 	}
 
 	// Makes the object motionless and transparent
@@ -208,7 +249,7 @@ public class Block : MonoBehaviour {
 
 			foreach(GameObject o in shape)
 			{
-				o.layer = 0;
+				o.layer = 16;
 			}
 		} else {
 			tower.removeBlock (gameObject);
@@ -254,7 +295,7 @@ public class Block : MonoBehaviour {
 		//print (startPos);
 
 		// Start from the block's position and check downward
-		for (int yCheck = (int)result; yCheck >= Mathf.Max (0, (int)(Mathf.Ceil (GameManager.instance.getShadow().transform.position.y / snap))); yCheck--)
+		for (int yCheck = (int)result; yCheck >= Mathf.Max (0, (int)(Mathf.Ceil (GameManager.instance.getShadow().transform.position.y / snap) + 1f)); yCheck--)
 		{
 			Vector3 checking = new Vector3(startPos.x, yCheck, startPos.z);
 			if (tower.checkPos(checking) == true)
@@ -267,28 +308,26 @@ public class Block : MonoBehaviour {
 		return result;
 	}
 
+
 	// Colourise on player touch
 	void OnCollisionStay(Collision collision) {
 		// Collide if active/falling
 		if (rb.isKinematic == true) // && coloured == false) // DISABLED so timer resets constantly
 		{
-			// Turn black if touched by goo
-			if (collision.gameObject.tag == "Shadow")
-			{
-				re.material.color = new Color(0f, 0f, 0f);
-				coloured = false;
-			}
 			if (collision.gameObject.tag == "Player")
 			{
-				foreach(GameObject o in shape)
+				if (coloured == false)
 				{
-					o.GetComponent<Renderer>().material.color = GameManager.instance.getBlobbi().GetComponent<BlobbiManager>().getColor ();
+					foreach(GameObject o in shape)
+					{
+						o.GetComponent<Renderer>().material.color = GameManager.instance.getBlobbi().GetComponent<Renderer>().material.color;
+					}
+					coloured = true;
+					colourTime = resetColourTime;
+					GetComponent<AudioSource>().volume = 1;
+					GetComponent<AudioSource>().clip = blockTouch;
+					GetComponent<AudioSource>().Play ();
 				}
-				coloured = true;
-				colourTime = resetColourTime;
-				GetComponent<AudioSource>().volume = 1;
-				GetComponent<AudioSource>().clip = blockTouch;
-				GetComponent<AudioSource>().Play ();
 
 			}
 
@@ -408,8 +447,19 @@ public class Block : MonoBehaviour {
 		}
 	}
 
+	void inkCheck()
+	{
+		// Turn black if touched by goo
+		if (ink.transform.position.y > transform.position.y + (snap * 1.5f))
+		{
+			tower.removeBlock (gameObject);
+		}
+	}
+
 	// Update is called once per frame
 	void Update () {
+		inkCheck();
+
 		// Interactions when the block is placed down
 		if (activated)
 		{
@@ -419,10 +469,10 @@ public class Block : MonoBehaviour {
 		{
 			// Snap position
 			transform.position = new Vector3(Mathf.Round(transform.position.x / (float)snap) * snap,
-			                                 Mathf.Round(tower.transform.position.y / (float)snap) * snap,
+			                                 Mathf.Max (GameManager.instance.getBuilderCamera().transform.position.y, target.y * snap),
 			                                 Mathf.Round(transform.position.z / (float)snap) * snap);
 			
-			tower.previewGrid.transform.position = new Vector3(tower.previewGrid.transform.position.x, transform.position.y - (snap / 2), tower.previewGrid.transform.position.z);
+			tower.previewGrid.transform.position = new Vector3(tower.previewGrid.transform.position.x, GameManager.instance.getBuilderCamera().transform.position.y - (snap / 2), tower.previewGrid.transform.position.z);
 
 			// Move the block inside the boundaries
 			checkBlockBounds();

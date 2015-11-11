@@ -98,7 +98,7 @@ public class TowerManager : MonoBehaviour {
 		previewGrid2.GetComponent<Renderer>().material.mainTextureScale = new Vector2(blockArraySizeX / 2, blockArraySizeZ / 2);
 		//previewGrid2.layer = 0;
 
-		generatePickup(1, new Color(1f, 0f, 0f));
+		generatePickup(1, new Color(1f, 0.05f, 0.05f));
 
 		//generatePickups();
 
@@ -123,6 +123,22 @@ public class TowerManager : MonoBehaviour {
 		}*/
 
 
+	}
+
+	public void transparentCameraPrep()
+	{
+		foreach (GameObject b in blocks)
+		{
+			b.GetComponent<Block>().setTransparents();
+		}
+	}
+
+	public void opaqueCameraPrep()
+	{
+		foreach (GameObject b in blocks)
+		{
+			b.GetComponent<Block>().setOpaques();
+		}
 	}
 
 	public void generatePickup(int height, Color col)
